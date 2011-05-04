@@ -14,9 +14,10 @@
 	},
 
 	"dependencies": {
-		"binary": ">=0.1.9",
 		"buffertools": ">=1.0.2",
+		"binary": ">=0.1.9",
 		"bigint": ">=0.3.1",
+		"step": ">=0.0.4",
 		"winston": ">=0.2.6",
 		"irc": ">=0.1.2"
 	},
