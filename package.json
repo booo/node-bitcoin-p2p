@@ -14,7 +14,7 @@
 	},
 
 	"dependencies": {
-		"buffertools": ">=1.0.2",
+		"buffertools": ">=1.0.3",
 		"binary": ">=0.1.9",
 		"bigint": ">=0.3.1",
 		"step": ">=0.0.4",
