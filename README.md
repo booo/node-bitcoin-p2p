@@ -127,10 +127,6 @@ chain reorg is still buggy)*
 - `tx` The Transaction object
 - `chain` The BlockChain object
 
-If the setting `feature.liveAccounting` is enabled, you can also
-listen to `txNotify:[pubKeyHash as base64]` and `txCancel:[pubKeyHash as
-base64]` to get events for a specific address only.
-
 TransactionStore emits the following events:
 
 **`txNotify`** - A transaction was added to the memory pool
@@ -147,8 +143,8 @@ TransactionStore emits the following events:
 - `store` The TransactionStore object
 
 If the setting `feature.liveAccounting` is enabled, you can also
-listen to **`txNotify:[pubKeyHash as base64]`** and **`txCancel:[pubKeyHash as
-base64]`** to get events for a specific address only.
+listen to `txNotify:[pubKeyHash as base64]` and `txCancel:[pubKeyHash as
+base64]` to get events for a specific address only.
 
 ## Storage
 
