@@ -128,8 +128,8 @@ chain reorg is still buggy)*
 - `chain` The BlockChain object
 
 If the setting `feature.liveAccounting` is enabled, you can also
-listen to **`txNotify:[pubKeyHash as base64]`** and **`txCancel:[pubKeyHash as
-base64]`** to get events for a specific address only.
+listen to `txNotify:[pubKeyHash as base64]` and `txCancel:[pubKeyHash as
+base64]` to get events for a specific address only.
 
 TransactionStore emits the following events:
 
