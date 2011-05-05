@@ -97,15 +97,8 @@ BlockChain emits the following events:
 - `txs` The transactions attached to the block
 - `chain` The BlockChain object
 
-**`blockCommit`** - Triggered when a block is attached to the main
- chain *(not yet implemented)*
-
-- `block` The Block object for the block in question
-- `txs` The transactions attached to the block
-- `chain` The BlockChain object
-
 **`blockRevoke`** - Triggered as the main chain is rolled back due to
-a split *(not yet implemented)*
+a split *(warning: block chain reorg is still buggy)*
 
 - `block` The Block object for the block in question
 - `txs` The transactions attached to the block
@@ -125,22 +118,37 @@ a split *(not yet implemented)*
 - `tx` The Transaction object
 - `chain` The BlockChain object
 
-**`txCommit`** - Triggered when a transaction is confirmed for the
-first time *(not yet implemented)*
-
-- `block` Containing Block object
-- `index` The index of the transaction in question
-- `tx` The Transaction object
-- `chain` The BlockChain object
-
 **`txRevoke`** - Triggered when a confirmed transaction is reverted as
-the containing block is no longer in the main chain *(not yet
-implemented)*
+the containing block is no longer in the main chain *(warning: block
+chain reorg is still buggy)*
 
 - `block` Containing Block object
 - `index` The index of the transaction in question
 - `tx` The Transaction object
 - `chain` The BlockChain object
+
+If the setting `feature.liveAccounting` is enabled, you can also
+listen to **`txNotify:[pubKeyHash as base64]`** and **`txCancel:[pubKeyHash as
+base64]`** to get events for a specific address only.
+
+TransactionStore emits the following events:
+
+**`txNotify`** - A transaction was added to the memory pool
+
+- `tx` The Transaction object
+- `store` The TransactionStore object
+
+**`txCancel`** - A transaction was removed from the memory pool
+  (because it was confirmed or because a conflicting transaction was
+  confirmed)
+
+- `tx` The Transaction object
+- `txHash` The transaction's hash in base64
+- `store` The TransactionStore object
+
+If the setting `feature.liveAccounting` is enabled, you can also
+listen to **`txNotify:[pubKeyHash as base64]`** and **`txCancel:[pubKeyHash as
+base64]`** to get events for a specific address only.
 
 ## Storage
 
