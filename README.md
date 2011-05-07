@@ -15,11 +15,15 @@ access to the data in the block chain (in real-time.)
 Please install a development version of the libgmp library. On
 Debian-based systems:
 
-    sudo aptitude install libgmp3-dev
+``` sh
+sudo aptitude install libgmp3-dev
+```
 
 You also need to have MongoDB installed and running:
 
-    sudo aptitude install mongodb
+``` sh
+sudo aptitude install mongodb
+```
 
 Make sure you have the latest build of [Node.js](http://nodejs.org/)
 from [github](https://github.com/joyent/node) installed. This library
@@ -175,7 +179,8 @@ storage.Transaction.findOne({hash: hash}, function (err, tx) {
 
     storage.Block.findOne({_id: tx.block}, function (err, block) {
         if (err) return;
-         // Do something fancy here...
+
+        // Do something fancy here...
     });
 });
 ```
