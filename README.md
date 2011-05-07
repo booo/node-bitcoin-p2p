@@ -31,7 +31,9 @@ Finally, you need [npm](http://npmjs.org/).
 
 Installation via NPM:
 
-    npm install node-bitcoin-p2p
+``` sh
+npm install node-bitcoin-p2p
+```
 
 Installation from git:
 
@@ -46,7 +48,9 @@ npm link
 When upgrading node-bitcoin-p2p it is a good idea to reset its
 database:
 
-    mongo bitcoin --eval "db.dropDatabase()"
+``` sh
+mongo bitcoin --eval "db.dropDatabase()"
+```
 
 This won't be necessary once node-bitcoin-p2p is more stable, but for
 now new versions often break database compatibility and since it only
@@ -57,15 +61,19 @@ takes about ten minutes to regenerate it makes sense to just reset it.
 Several examples on how to start up the library are provided in the
 `examples/` folder. To run an example simply call it with node:
 
-    node examples/simple.js
+``` sh
+node examples/simple.js
+```
 
 The most basic way to start node-bitcoin-p2p in your own code  goes
 like this:
 
-    var Bitcoin = require('bitcoin-p2p');
+``` js
+var Bitcoin = require('bitcoin-p2p');
 
-    node = new Bitcoin.Node();
-    node.start();
+node = new Bitcoin.Node();
+node.start();
+```
 
 All the other examples presuppose you've already started a node using
 this code.
@@ -79,11 +87,13 @@ information from the library: Events and Storage.
 Get a reference to the BlockChain object to start listening to block
 chain changes:
 
-    var chain = node.getBlockChain();
-    // Log each block as it's added to the block chain
-    chain.addListener('blockSave', function (e) {
-        console.log(e.block);
-    });
+``` js
+var chain = node.getBlockChain();
+// Log each block as it's added to the block chain
+chain.addListener('blockSave', function (e) {
+    console.log(e.block);
+});
+```
 
 BlockChain emits the following events:
 
@@ -157,27 +167,30 @@ All the models are instantiated by the `Storage` class, so all you
 need to do is get a reference to that from the Bitcoin `Node` and
 you're good to go:
 
-    var storage = node.getStorage();
-    storage.Transaction.findOne({hash: hash}, function (err, tx) {
-        // In real code, you'd handle the error of course
+``` js
+var storage = node.getStorage();
+storage.Transaction.findOne({hash: hash}, function (err, tx) {
+    // In real code, you'd handle the error of course
+    if (err) return;
+
+    storage.Block.findOne({_id: tx.block}, function (err, block) {
         if (err) return;
-
-        storage.Block.findOne({_id: tx.block}, function (err, block) {
-            if (err) return;
-
-            // Do something fancy here...
-        });
+         // Do something fancy here...
     });
+});
+```
 
 There are also some convenience functions you can use:
 
-    var chain = node.getBlockChain();
-    chain.getBlockByHash(hash, function (err, block) {
-        if (err) return;
+``` js
+var chain = node.getBlockChain();
+chain.getBlockByHash(hash, function (err, block) {
+    if (err) return;
 
-        // Do something with the Block
-        console.log(block);
-    });
+    // Do something with the Block
+    console.log(block);
+});
+```
 
 ## Logging
 
