@@ -2,6 +2,9 @@ var vows = require('vows'),
     assert = require('assert');
 
 var Util = require('../lib/util');
+var logger = require('../lib/logger');
+
+logger.disable();
 
 vows.describe('Bitcoin Utils').addBatch({
 	'A Bitcoin address': {
