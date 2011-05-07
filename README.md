@@ -213,6 +213,15 @@ are the available log levels:
 If you run node-bitcoin-p2p from a compatible shell, you should get a
 fairly nice series of log messages as it is booting up.
 
+# Tests
+
+To run the test, please install [Vows](http://vowsjs.org) and run the
+following command:
+
+``` sh
+vows test/* --spec
+```
+
 # Status
 
 The library is currently alpha quality. Here are some things it
