@@ -12,6 +12,25 @@ access to the data in the block chain (in real-time.)
 
 # Prerequisites
 
+
+
+
+# Installation
+
+## Prerequisites
+
+Make sure you have the latest build of [Node.js](http://nodejs.org/)
+from [github](https://github.com/joyent/node) installed. This library
+uses functionality introduced in Node.js 0.5.0.
+
+You also need [npm](http://npmjs.org/) 1.0+.
+
+MongoDB should be installed and running:
+
+``` sh
+sudo aptitude install mongodb
+```
+
 Please install a development version of the libgmp library. On
 Debian-based systems:
 
@@ -19,33 +38,29 @@ Debian-based systems:
 sudo aptitude install libgmp3-dev
 ```
 
-You also need to have MongoDB installed and running:
+## Option 1 - Installation via NPM
 
-``` sh
-sudo aptitude install mongodb
-```
-
-Make sure you have the latest build of [Node.js](http://nodejs.org/)
-from [github](https://github.com/joyent/node) installed. This library
-uses functionality introduced in Node.js 0.5.0.
-
-Finally, you need [npm](http://npmjs.org/).
-
-# Installation
-
-Installation via NPM:
+This will install the current release from NPM.
 
 ``` sh
 npm install node-bitcoin-p2p
 ```
 
-Installation from git:
+## Option 2 - Installation from git (recommended)
+
+This will install the latest version straight from the repository:
 
 ``` sh
+# Download a copy of node-bitcoin-p2p from git
 git clone git://github.com/justmoon/node-bitcoin-p2p.git --recursive
 cd node-bitcoin-p2p
-npm link
+
+# Download dependencies, compile and install
+sudo npm link
 ```
+
+If you run into problems, please take a look at the "Troubleshooting"
+section below or go to the Issues tab to open a new ticket.
 
 # Upgrading
 
@@ -236,6 +251,23 @@ On top of that, it could use a lot more documentation, test
 cases and general bug fixing across the board.
 
 You can find more information on the Issues tab on Github.
+
+# Troubleshooting
+
+## Native module missing
+
+If you see this error:
+
+    Error: Cannot find module '../build-cc/default/native'
+
+This happens when the native components of node-bitcoin-p2p are not
+compiled yet.
+
+Make sure you have `libgmp3-dev` installed, then run:
+
+``` sh
+node-waf configure build
+```
 
 # Credits
 
