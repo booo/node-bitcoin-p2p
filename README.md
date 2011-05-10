@@ -10,11 +10,6 @@ library only contains the node, i.e. the P2P part of Bitcoin. Its
 intended use is as a server component to give lighter clients
 access to the data in the block chain (in real-time.)
 
-# Prerequisites
-
-
-
-
 # Installation
 
 ## Prerequisites
