@@ -55,7 +55,10 @@ This will install the latest version straight from the repository:
 git clone git://github.com/justmoon/node-bitcoin-p2p.git --recursive
 cd node-bitcoin-p2p
 
-# Download dependencies, compile and install
+# Compile native components
+node-waf configure build
+
+# Download dependencies and install
 sudo npm link
 ```
 
