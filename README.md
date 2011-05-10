@@ -33,15 +33,20 @@ Debian-based systems:
 sudo aptitude install libgmp3-dev
 ```
 
-## Option 1 - Installation via NPM
+## Option 1 - Installation via npm (recommended)
 
-This will install the current release from NPM.
+This will install the current release from npm.
 
 ``` sh
-npm install node-bitcoin-p2p
+sudo npm install bitcoin-p2p
 ```
 
-## Option 2 - Installation from git (recommended)
+This will install node-bitcoin-p2p locally. To install it globally,
+add the `-g` flag to the above command. For more information on npm
+1.0 link, see [this
+post](http://blog.nodejs.org/2011/04/06/npm-1-0-link/).
+
+## Option 2 - Installation from git
 
 This will install the latest version straight from the repository:
 
@@ -258,7 +263,8 @@ If you see this error:
 This happens when the native components of node-bitcoin-p2p are not
 compiled yet.
 
-Make sure you have `libgmp3-dev` installed, then run:
+Make sure you have `libgmp3-dev` installed, then go to the
+node-bitcoin-p2p folder and run:
 
 ``` sh
 node-waf configure build
