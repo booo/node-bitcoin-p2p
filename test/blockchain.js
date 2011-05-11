@@ -2,45 +2,100 @@ var vows = require('vows'),
     assert = require('assert');
 
 var Storage = require('../lib/storage').Storage;
+var Settings = require('../lib/settings').Settings;
 var BlockChain = require('../lib/blockchain').BlockChain;
+var Miner = require('../lib/miner/javascript.js').JavaScriptMiner;
 
 vows.describe('Block Chain').addBatch({
-	'An empty block chain': {
+	'A block chain': {
 		topic: function () {
-			var self = this;
-			var chain = new BlockChain(new Storage('mongodb://localhost/bitcointest'));
-			chain.on('initComplete', function () {
-				self.callback(null, chain);
-			});
-			chain.init();
+			makeEmptyTestChain(this.callback);
 		},
 
 		'is a BlockChain': function (blockChain) {
 			assert.instanceOf(blockChain, BlockChain);
 		},
 
-		'contains the genesis block': {
+		'contains the genesis block which': {
 			topic: function (topic) {
 				return topic.getTopBlock();
 			},
 
-			'which is a block': function (topic) {
+			'is a block': function (topic) {
 				assert.instanceOf(topic, topic.base.model('Block'));
 			},
 
-			'with a valid hash': function (topic) {
+			'has a valid hash': function (topic) {
 				assert.isTrue(topic.checkHash());
 			},
 
-			'that matches the expected genesis block hash': function (topic) {
-				var expectedHash = new Buffer('6FE28C0AB6F1B372C1A6A246AE63F74F' +
-											  '931E8365E15A089C68D6190000000000', 'hex');
-				assert.equal(expectedHash.compare(topic.getHash()), 0);
+			'has the correct hash': function (topic) {
+				var expectedHash =
+					'14DAE1DB98CA7EFA42CC9EBE7EBB19BD' +
+					'88D80D6CBD3C4A993C20B47401D238C6';
+
+				var actualHash =
+					topic.getHash().toString('hex').toUpperCase();
+
+				assert.equal(actualHash, expectedHash);
 			},
 
-			'has the correct height': function (topic) {
+			'has a height of zero': function (topic) {
 				assert.equal(+topic.height, 0);
 			}
+		},
+
+		'after mining a block': {
+			topic: function (chain) {
+				var self = this;
+				var fakeBeneficiary = new Buffer(20).clear();
+
+				chain.getTopBlock().mineNextBlock(
+					fakeBeneficiary,
+					Math.floor(new Date().getTime() / 1000),
+					new Miner(),
+					function (err, newBlock, txs) {
+						if (err) {
+							self.callback(err);
+							return;
+						}
+
+						chain.add(newBlock, txs, function (err, result) {
+							self.callback(err, result);
+						});
+					}
+				);
+			},
+
+			'has a height of one': function (block) {
+				assert.equal(block.height, 1);
+			}
 		}
-	}
+	},
+
 }).export(module);
+
+function makeEmptyTestChain(callback) {
+	var settings = new Settings();
+	var storage = new Storage('mongodb://localhost/bitcointest');
+
+	settings.setUnitnetDefaults();
+
+	storage.dropDatabase(function (err, result) {
+		if (err) {
+			callback(err);
+			return;
+		}
+
+		var chain = new BlockChain(storage, settings);
+		chain.on('initComplete', function (err) {
+			if (err) {
+				callback(err);
+				return;
+			}
+
+			callback(null, chain);
+		});
+		chain.init();
+	});
+};
