@@ -6,8 +6,10 @@ var Settings = require('../lib/settings').Settings;
 var BlockChain = require('../lib/blockchain').BlockChain;
 var Miner = require('../lib/miner/javascript.js').JavaScriptMiner;
 
+var Step = require('step');
+
 vows.describe('Block Chain').addBatch({
-	'A block chain': {
+	'An empty block chain': {
 		topic: function () {
 			makeEmptyTestChain(this.callback);
 		},
@@ -44,35 +46,74 @@ vows.describe('Block Chain').addBatch({
 				assert.equal(+topic.height, 0);
 			}
 		},
-
-		'after mining a block': {
-			topic: function (chain) {
-				var self = this;
+	}
+}).addBatch({
+	'A chain with a single mined block': {
+		topic: function () {
+			var self = this;
+			makeEmptyTestChain(function (err, chain) {
 				var fakeBeneficiary = new Buffer(20).clear();
 
-				chain.getTopBlock().mineNextBlock(
-					fakeBeneficiary,
-					Math.floor(new Date().getTime() / 1000),
-					new Miner(),
-					function (err, newBlock, txs) {
-						if (err) {
-							self.callback(err);
-							return;
-						}
+				createBlock(chain.getTopBlock(), chain, function (err, result) {
+					self.callback(err, result);
+				});
+			});
+		},
 
-						chain.add(newBlock, txs, function (err, result) {
-							self.callback(err, result);
-						});
-					}
-				);
-			},
-
-			'has a height of one': function (block) {
-				assert.equal(block.height, 1);
-			}
+		'has a height of one': function (chain) {
+			assert.equal(chain.getTopBlock().height, 1);
 		}
-	},
+	}
+}).addBatch({
+	'A chain after a split': {
+		topic: function () {
+			var self = this;
 
+			var forkHead;
+			Step(
+				function makeChain() {
+					makeEmptyTestChain(this);
+				},
+				function firstBlock(err, chain) {
+					if (err) throw err;
+
+					forkHead = createBlock(chain.getTopBlock(), chain, this);
+				},
+				function secondBlock(err, chain) {
+					if (err) throw err;
+
+					createBlock(chain.getTopBlock(), chain, this);
+				},
+				function thirdBlock(err, chain) {
+					if (err) throw err;
+
+					createBlock(chain.getTopBlock(), chain, this);
+				},
+				function firstSplitBlock(err, chain) {
+					if (err) throw err;
+
+					forkHead = createBlock(forkHead, chain, this);
+				},
+				function secondSplitBlock(err, chain) {
+					if (err) throw err;
+
+					forkHead = createBlock(forkHead, chain, this);
+				},
+				function thirdSplitBlock(err, chain) {
+					if (err) throw err;
+
+					forkHead = createBlock(forkHead, chain, this);
+				},
+				function finish(err, chain) {
+					self.callback(err, chain);
+				}
+			);
+		},
+
+		'has a height of four': function (chain) {
+			assert.equal(chain.getTopBlock().height, 4);
+		}
+	}
 }).export(module);
 
 function makeEmptyTestChain(callback) {
@@ -81,7 +122,7 @@ function makeEmptyTestChain(callback) {
 
 	settings.setUnitnetDefaults();
 
-	storage.dropDatabase(function (err, result) {
+	storage.emptyDatabase(function (err, result) {
 		if (err) {
 			callback(err);
 			return;
@@ -98,4 +139,28 @@ function makeEmptyTestChain(callback) {
 		});
 		chain.init();
 	});
+};
+
+function createBlock(block, chain, callback) {
+	var fakeBeneficiary = new Buffer(65).clear();
+	fakeBeneficiary[0] = 0x04;
+	for (var i = 1, l = fakeBeneficiary.length; i < l; i++) {
+		fakeBeneficiary[i] = Math.floor(Math.random()*256);
+	}
+
+	return block.mineNextBlock(
+		fakeBeneficiary,
+		Math.floor(new Date().getTime() / 1000),
+		new Miner(),
+		function (err, newBlock, txs) {
+			if (err) {
+				callback(err);
+				return;
+			}
+
+			chain.add(newBlock, txs, function (err, result) {
+				callback(err, chain);
+			});
+		}
+	);
 };
