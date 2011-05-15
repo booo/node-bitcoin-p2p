@@ -8,9 +8,7 @@ var Miner = require('../lib/miner/javascript.js').JavaScriptMiner;
 
 var Step = require('step');
 
-var tester = vows.describe('Block Chain');
-
-tester.addBatch({
+vows.describe('Block Chain').addBatch({
 	'An empty block chain': {
 		topic: function () {
 			Step(
@@ -52,9 +50,7 @@ tester.addBatch({
 			}
 		},
 	}
-});
-
-tester.addBatch({
+}).addBatch({
 	'A chain with a single mined block': {
 		topic: function () {
 			var self = this;
@@ -75,55 +71,67 @@ tester.addBatch({
 			assert.equal(chain.getTopBlock().height, 1);
 		}
 	}
-});
+}).addBatch({
+	'A chain after a split': {
+		// Block chain layout:
+		topic: makeTestChain({
+			blocks: [
+				// O -> A -> B -> C
+				//       `-> D -> E -> F
+				['O', 'A'],
+				['A', 'B'],
+				['B', 'C'],
+				['A', 'D'],
+				['D', 'E'],
+				['E', 'F']
+			]
+		}),
 
-(function () {
+		'has a height of four': function (topic) {
+			assert.equal(topic.getTopBlock().height, 4);
+		}
+	}
+}).export(module);
+
+function makeTestChain(descriptor) {
 	var blocks = {};
 
-	function makeBlock(parent, name) {
+	function makeBlock(blockDesc) {
+		// Translate shorthand into normal block descriptor
+		if (Array.isArray(blockDesc)) {
+			blockDesc = {
+				parent: blockDesc[0],
+				name: blockDesc[1]
+			};
+		}
+
 		return function (err, chain) {
 			if (err) throw err;
 
-			blocks[name] = createBlock(blocks[parent], chain, this);
+			blocks[blockDesc.name] = createBlock(blocks[blockDesc.parent], chain, this);
 		};
 	};
 
-	tester.addBatch({
-		'A chain after a split': {
-			topic: function () {
-				var self = this;
+	return function () {
+		var steps = [];
 
-				var forkHead;
-				Step(
-					makeEmptyTestChain,
-					function indexGenesisBlock(err, chain) {
-						if (err) throw err;
+		steps.push(makeEmptyTestChain);
+		steps.push(function indexGenesisBlock(err, chain) {
+			if (err) throw err;
 
-						blocks['O'] = chain.getTopBlock();
-						this(null, chain);
-					},
+			blocks['O'] = chain.getTopBlock();
+			this(null, chain);
+		});
 
-					// Block chain layout:
-					//   O -> A -> B -> C
-					//         \-> D -> E -> F
-					makeBlock('O', 'A'),
-					makeBlock('A', 'B'),
-					makeBlock('B', 'C'),
-					makeBlock('A', 'D'),
-					makeBlock('D', 'E'),
-					makeBlock('E', 'F'),
-					self.callback
-				);
-			},
+		if (descriptor.blocks) descriptor.blocks.forEach(function (blockDesc) {
+			steps.push(makeBlock(blockDesc));
+		});
 
-			'has a height of four': function (chain) {
-				assert.equal(chain.getTopBlock().height, 4);
-			}
-		}
-	});
-})();
+		steps.push(this.callback);
 
-tester.export(module);
+		Step.apply(null, steps);
+	};
+};
 
 function makeEmptyTestChain() {
 	var callback = this;
