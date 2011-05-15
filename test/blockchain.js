@@ -106,6 +106,28 @@ vows.describe('Block Chain').addBatch({
 		'has H as the top block': function (topic) {
 			assert.equal(topic.chain.getTopBlock().getHash().toString('hex'),
 						 topic.blocks.H.getHash().toString('hex'));
+		},
+
+		'for block locator A, E, F': {
+			topic: function (topic) {
+				var self = this;
+
+				var blockLocator = [];
+				blockLocator.push(topic.blocks.A.getHash());
+				blockLocator.push(topic.blocks.E.getHash());
+				blockLocator.push(topic.blocks.F.getHash());
+
+				topic.chain.getBlockByLocator(blockLocator, function (err, resultBlock) {
+					if (err) throw err;
+
+					self.callback(err, resultBlock, topic);
+				});
+			},
+
+			'returns A': function (err, resultBlock, topic) {
+				assert.equal(resultBlock.getHash().toString('hex'),
+							 topic.blocks.A.getHash().toString('hex'));
+			}
 		}
 	}
 }).export(module);
