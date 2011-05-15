@@ -82,6 +82,32 @@ vows.describe('Block Chain').addBatch({
 						 topic.blocks.F.getHash().toString('hex'));
 		}
 	}
+}).addBatch({
+	'A chain after a split and reversal': {
+		topic: makeTestChain({
+			blocks: [
+				// O -> A -> B -> C -> G -> H
+				//       `-> D -> E -> F
+				['O', 'A'],
+				['A', 'B'],
+				['B', 'C'],
+				['A', 'D'],
+				['D', 'E'],
+				['E', 'F'],
+				['C', 'G'],
+				['G', 'H']
+			]
+		}),
+
+		'has a height of five': function (topic) {
+			assert.equal(topic.chain.getTopBlock().height, 5);
+		},
+
+		'has H as the top block': function (topic) {
+			assert.equal(topic.chain.getTopBlock().getHash().toString('hex'),
+						 topic.blocks.H.getHash().toString('hex'));
+		}
+	}
 }).export(module);
 
 function makeTestChain(descriptor) {
@@ -123,6 +149,8 @@ function makeTestChain(descriptor) {
 		}
 
 		steps.push(function createTesterObject(err, chain) {
+			if (err) throw err;
+
 			var topic = {};
 
 			topic.chain = chain;
