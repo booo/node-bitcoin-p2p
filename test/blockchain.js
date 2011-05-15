@@ -73,7 +73,6 @@ vows.describe('Block Chain').addBatch({
 	}
 }).addBatch({
 	'A chain after a split': {
-		// Block chain layout:
 		topic: makeTestChain({
 			blocks: [
 				// O -> A -> B -> C
@@ -88,7 +87,7 @@ vows.describe('Block Chain').addBatch({
 		}),
 
 		'has a height of four': function (topic) {
-			assert.equal(topic.getTopBlock().height, 4);
+			assert.equal(topic.chain.getTopBlock().height, 4);
 		}
 	}
 }).export(module);
@@ -125,6 +124,15 @@ function makeTestChain(descriptor) {
 
 		if (descriptor.blocks) descriptor.blocks.forEach(function (blockDesc) {
 			steps.push(makeBlock(blockDesc));
+		});
+
+		steps.push(function createTesterObject(err, chain) {
+			var topic = {};
+
+			topic.chain = chain;
+			topic.blocks = blocks;
+
+			return topic;
 		});
 
 		steps.push(this.callback);
