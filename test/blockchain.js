@@ -10,20 +10,15 @@ var Step = require('step');
 
 vows.describe('Block Chain').addBatch({
 	'An empty block chain': {
-		topic: function () {
-			Step(
-				makeEmptyTestChain,
-				this.callback
-			);
-		},
+		topic: makeTestChain(),
 
-		'is a BlockChain': function (blockChain) {
-			assert.instanceOf(blockChain, BlockChain);
+		'is a BlockChain': function (topic) {
+			assert.instanceOf(topic.chain, BlockChain);
 		},
 
 		'contains the genesis block which': {
 			topic: function (topic) {
-				return topic.getTopBlock();
+				return topic.chain.getTopBlock();
 			},
 
 			'is a block': function (topic) {
@@ -52,23 +47,15 @@ vows.describe('Block Chain').addBatch({
 	}
 }).addBatch({
 	'A chain with a single mined block': {
-		topic: function () {
-			var self = this;
-			Step(
-				makeEmptyTestChain,
-				function createSingleBlock(err, chain) {
-					if (err) throw err;
+		topic: makeTestChain({
+			blocks: [
+				// O -> A
+				['O', 'A']
+			]
+		}),
 
-					var fakeBeneficiary = new Buffer(20).clear();
-
-					createBlock(chain.getTopBlock(), chain, this);
-				},
-				self.callback
-			);
-		},
-
-		'has a height of one': function (chain) {
-			assert.equal(chain.getTopBlock().height, 1);
+		'has a height of one': function (topic) {
+			assert.equal(topic.chain.getTopBlock().height, 1);
 		}
 	}
 }).addBatch({
@@ -100,6 +87,8 @@ vows.describe('Block Chain').addBatch({
 function makeTestChain(descriptor) {
 	var blocks = {};
 
+	descriptor = descriptor || {};
+
 	function makeBlock(blockDesc) {
 		// Translate shorthand into normal block descriptor
 		if (Array.isArray(blockDesc)) {
@@ -127,9 +116,11 @@ function makeTestChain(descriptor) {
 			this(null, chain);
 		});
 
-		if (descriptor.blocks) descriptor.blocks.forEach(function (blockDesc) {
-			steps.push(makeBlock(blockDesc));
-		});
+		if (Array.isArray(descriptor.blocks)) {
+			descriptor.blocks.forEach(function (blockDesc) {
+				steps.push(makeBlock(blockDesc));
+			});
+		}
 
 		steps.push(function createTesterObject(err, chain) {
 			var topic = {};
