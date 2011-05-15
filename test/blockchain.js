@@ -88,6 +88,11 @@ vows.describe('Block Chain').addBatch({
 
 		'has a height of four': function (topic) {
 			assert.equal(topic.chain.getTopBlock().height, 4);
+		},
+
+		'has F as the top block': function (topic) {
+			assert.equal(topic.chain.getTopBlock().getHash().toString('hex'),
+						 topic.blocks.F.getHash().toString('hex'));
 		}
 	}
 }).export(module);
