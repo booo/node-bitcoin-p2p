@@ -134,6 +134,7 @@ vows.describe('Block Chain').addBatch({
 
 function makeTestChain(descriptor) {
 	var blocks = {};
+	var events = [];
 
 	descriptor = descriptor || {};
 
@@ -157,10 +158,20 @@ function makeTestChain(descriptor) {
 		var steps = [];
 
 		steps.push(makeEmptyTestChain);
-		steps.push(function indexGenesisBlock(err, chain) {
+		steps.push(function setupTest(err, chain) {
 			if (err) throw err;
 
+			// Index genesis block
 			blocks['O'] = chain.getTopBlock();
+
+			// Monkey-patch a mechanism onto the block chain captures all events.
+			chain.__emit = chain.emit;
+			chain.emit = function captureEvent() {
+				var args = Array.prototype.slice.call(arguments, 0);
+				events.push(args);
+				this.__emit.apply(this, args);
+			};
+
 			this(null, chain);
 		});
 
@@ -177,6 +188,7 @@ function makeTestChain(descriptor) {
 
 			topic.chain = chain;
 			topic.blocks = blocks;
+			topic.events = events;
 
 			return topic;
 		});
