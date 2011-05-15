@@ -8,10 +8,15 @@ var Miner = require('../lib/miner/javascript.js').JavaScriptMiner;
 
 var Step = require('step');
 
-vows.describe('Block Chain').addBatch({
+var tester = vows.describe('Block Chain');
+
+tester.addBatch({
 	'An empty block chain': {
 		topic: function () {
-			makeEmptyTestChain(this.callback);
+			Step(
+				makeEmptyTestChain,
+				this.callback
+			);
 		},
 
 		'is a BlockChain': function (blockChain) {
@@ -47,76 +52,82 @@ vows.describe('Block Chain').addBatch({
 			}
 		},
 	}
-}).addBatch({
+});
+
+tester.addBatch({
 	'A chain with a single mined block': {
 		topic: function () {
 			var self = this;
-			makeEmptyTestChain(function (err, chain) {
-				var fakeBeneficiary = new Buffer(20).clear();
+			Step(
+				makeEmptyTestChain,
+				function createSingleBlock(err, chain) {
+					if (err) throw err;
 
-				createBlock(chain.getTopBlock(), chain, function (err, result) {
-					self.callback(err, result);
-				});
-			});
+					var fakeBeneficiary = new Buffer(20).clear();
+
+					createBlock(chain.getTopBlock(), chain, this);
+				},
+				self.callback
+			);
 		},
 
 		'has a height of one': function (chain) {
 			assert.equal(chain.getTopBlock().height, 1);
 		}
 	}
-}).addBatch({
-	'A chain after a split': {
-		topic: function () {
-			var self = this;
+});
 
-			var forkHead;
-			Step(
-				function makeChain() {
-					makeEmptyTestChain(this);
-				},
-				function firstBlock(err, chain) {
-					if (err) throw err;
+(function () {
+	var blocks = {};
 
-					forkHead = createBlock(chain.getTopBlock(), chain, this);
-				},
-				function secondBlock(err, chain) {
-					if (err) throw err;
+	function makeBlock(parent, name) {
+		return function (err, chain) {
+			if (err) throw err;
 
-					createBlock(chain.getTopBlock(), chain, this);
-				},
-				function thirdBlock(err, chain) {
-					if (err) throw err;
+			blocks[name] = createBlock(blocks[parent], chain, this);
+		};
+	};
 
-					createBlock(chain.getTopBlock(), chain, this);
-				},
-				function firstSplitBlock(err, chain) {
-					if (err) throw err;
+	tester.addBatch({
+		'A chain after a split': {
+			topic: function () {
+				var self = this;
 
-					forkHead = createBlock(forkHead, chain, this);
-				},
-				function secondSplitBlock(err, chain) {
-					if (err) throw err;
+				var forkHead;
+				Step(
+					makeEmptyTestChain,
+					function indexGenesisBlock(err, chain) {
+						if (err) throw err;
 
-					forkHead = createBlock(forkHead, chain, this);
-				},
-				function thirdSplitBlock(err, chain) {
-					if (err) throw err;
+						blocks['O'] = chain.getTopBlock();
+						this(null, chain);
+					},
 
-					forkHead = createBlock(forkHead, chain, this);
-				},
-				function finish(err, chain) {
-					self.callback(err, chain);
-				}
-			);
-		},
+					// Block chain layout:
+					//   O -> A -> B -> C
+					//         \-> D -> E -> F
+					makeBlock('O', 'A'),
+					makeBlock('A', 'B'),
+					makeBlock('B', 'C'),
+					makeBlock('A', 'D'),
+					makeBlock('D', 'E'),
+					makeBlock('E', 'F'),
+					self.callback
+				);
+			},
 
-		'has a height of four': function (chain) {
-			assert.equal(chain.getTopBlock().height, 4);
+			'has a height of four': function (chain) {
+				assert.equal(chain.getTopBlock().height, 4);
+			}
 		}
-	}
-}).export(module);
+	});
+})();
 
-function makeEmptyTestChain(callback) {
+tester.export(module);
+
+function makeEmptyTestChain() {
+	var callback = this;
+
 	var settings = new Settings();
 	var storage = new Storage('mongodb://localhost/bitcointest');
 
