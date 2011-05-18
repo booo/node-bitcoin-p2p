@@ -281,5 +281,5 @@ Copyright (c) 2011 Stefan Thomas <justmoon@members.fsf.org>.
 Native extensions are<br>
 Copyright (c) 2011 Andrew Schaaf <andrew@andrewschaaf.com>
 
-Parts of this software are based on BitcoinJ<br>
+Parts of this software are based on [BitcoinJ](http://code.google.com/p/bitcoinj/)<br>
 Copyright (c) 2011 Google Inc.
