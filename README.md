@@ -275,11 +275,11 @@ node-waf configure build
 
 # Credits
 
-node-bitcoin-p2p - Node.js Bitcoin client
+node-bitcoin-p2p - Node.js Bitcoin client<br>
 Copyright (c) 2011 Stefan Thomas <justmoon@members.fsf.org>.
 
-Native extensions are
+Native extensions are<br>
 Copyright (c) 2011 Andrew Schaaf <andrew@andrewschaaf.com>
 
-Parts of this software are based on BitcoinJ
+Parts of this software are based on BitcoinJ<br>
 Copyright (c) 2011 Google Inc.
