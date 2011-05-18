@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 var profiler = require("v8-profiler");
 var Bitcoin = require('../lib/bitcoin');
 
