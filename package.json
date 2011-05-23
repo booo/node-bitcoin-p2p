@@ -20,7 +20,7 @@
 		"step": ">=0.0.4",
 		"winston": ">=0.2.6",
 		"irc": ">=0.1.2",
- 		"webworker": "*"
+		"webworker": "*"
 	},
 
 	"author": "Stefan Thomas <justmoon@members.fsf.org> (http://www.justmoon.net)",
