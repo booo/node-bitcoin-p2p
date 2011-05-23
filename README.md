@@ -87,6 +87,11 @@ Several examples on how to start up the library are provided in the
 node examples/simple.js
 ```
 
+*It's highly recommended that you run bitcoind in front of bitcoin-p2p at this
+time (simply have bitcoind running before launching bitcoin-p2p). Forward-facing
+bitcoin-p2p nodes have not been well tested and may contain bugs that compromise
+its security.*
+
 The most basic way to start node-bitcoin-p2p in your own code  goes
 like this:
 
