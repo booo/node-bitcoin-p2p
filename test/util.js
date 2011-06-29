@@ -12,7 +12,7 @@ vows.describe('Bitcoin Utils').addBatch({
 		'is decoded correctly': function (topic) {
 			var addrHash = Util.addressToPubKeyHash(topic);
 
-			var expected = new Buffer('119b098e2e980a229e139a9ed01a469e518e6f26', 'hex');
+			var expected = Util.decodeHex('119b098e2e980a229e139a9ed01a469e518e6f26');
 			assert.equal(expected.compare(addrHash), 0);
 		},
 		'is re-encoded correctly': function (topic) {

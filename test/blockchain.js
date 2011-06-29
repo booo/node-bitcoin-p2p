@@ -5,6 +5,7 @@ var Storage = require('../lib/storage').Storage;
 var Settings = require('../lib/settings').Settings;
 var BlockChain = require('../lib/blockchain').BlockChain;
 var Miner = require('../lib/miner/javascript.js').JavaScriptMiner;
+var encodeHex = require('../lib/util').encodeHex;
 
 var Step = require('step');
 
@@ -35,7 +36,7 @@ vows.describe('Block Chain').addBatch({
 					'88D80D6CBD3C4A993C20B47401D238C6';
 
 				var actualHash =
-					topic.getHash().toString('hex').toUpperCase();
+					encodeHex(topic.getHash()).toUpperCase();
 
 				assert.equal(actualHash, expectedHash);
 			},
@@ -78,8 +79,8 @@ vows.describe('Block Chain').addBatch({
 		},
 
 		'has F as the top block': function (topic) {
-			assert.equal(topic.chain.getTopBlock().getHash().toString('hex'),
-						 topic.blocks.F.getHash().toString('hex'));
+			assert.equal(encodeHex(topic.chain.getTopBlock().getHash()),
+						 encodeHex(topic.blocks.F.getHash()));
 		}
 	}
 }).addBatch({
@@ -104,8 +105,8 @@ vows.describe('Block Chain').addBatch({
 		},
 
 		'has H as the top block': function (topic) {
-			assert.equal(topic.chain.getTopBlock().getHash().toString('hex'),
-						 topic.blocks.H.getHash().toString('hex'));
+			assert.equal(encodeHex(topic.chain.getTopBlock().getHash()),
+						 encodeHex(topic.blocks.H.getHash()));
 		},
 
 		'for block locator A, E, F': {
@@ -125,8 +126,8 @@ vows.describe('Block Chain').addBatch({
 			},
 
 			'returns A': function (err, resultBlock, topic) {
-				assert.equal(resultBlock.getHash().toString('hex'),
-							 topic.blocks.A.getHash().toString('hex'));
+				assert.equal(encodeHex(resultBlock.getHash()),
+							 encodeHex(topic.blocks.A.getHash()));
 			}
 		}
 	}
