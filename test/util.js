@@ -7,26 +7,27 @@ var logger = require('../lib/logger');
 logger.disable();
 
 vows.describe('Bitcoin Utils').addBatch({
-	'A Bitcoin address': {
-		topic: "12c6DSiU4Rq3P4ZxziKxzrL5LmMBrzjrJX",
-		'is decoded correctly': function (topic) {
-			var addrHash = Util.addressToPubKeyHash(topic);
+  'A Bitcoin address': {
+    topic: "12c6DSiU4Rq3P4ZxziKxzrL5LmMBrzjrJX",
+    'is decoded correctly': function (topic) {
+      var addrHash = Util.addressToPubKeyHash(topic);
 
-			var expected = Util.decodeHex('119b098e2e980a229e139a9ed01a469e518e6f26');
-			assert.equal(expected.compare(addrHash), 0);
-		},
-		'is re-encoded correctly': function (topic) {
-			var addrHash = Util.addressToPubKeyHash(topic);
-			assert.equal(Util.pubKeyHashToAddress(addrHash), topic);
-		}
-	},
+      var expected = Util.decodeHex('119b098e2e980a229e139a9ed01a469e518e6f26');
+      assert.equal(expected.compare(addrHash), 0);
+    },
+    'is re-encoded correctly': function (topic) {
+      var addrHash = Util.addressToPubKeyHash(topic);
+      assert.equal(Util.pubKeyHashToAddress(addrHash), topic);
+    }
+  },
 
-	'Difficulty bits': {
-		topic: 0x1b0404cb,
-		'can be converted to a target': function (topic) {
-			var target = Util.decodeDiffBits(topic);
-			assert.equal(target.toHex(),
-						 "00000000000404cb000000000000000000000000000000000000000000000000");
-		}
-	}
+  'Difficulty bits': {
+    topic: 0x1b0404cb,
+    'can be converted to a target': function (topic) {
+      var target = Util.decodeDiffBits(topic);
+      assert.equal(target.toHex(),
+                   "00000000000404cb0000000000000000" +
+                   "00000000000000000000000000000000");
+    }
+  }
 }).export(module);

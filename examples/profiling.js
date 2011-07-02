@@ -23,15 +23,15 @@ node.addPeer('localhost');
 
 // Profile each state in the startup routine
 node.addListener('stateChange', function (e) {
-	// Start profiling for the state that just started
-	if (e.newState) {
-		profiler.startProfiling(e.newState);
-	}
+  // Start profiling for the state that just started
+  if (e.newState) {
+    profiler.startProfiling(e.newState);
+  }
 
-	// Stop profiling for the state that just ended
-	if (e.oldState) {
-		profiler.stopProfiling(e.newState);
-	}
+  // Stop profiling for the state that just ended
+  if (e.oldState) {
+    profiler.stopProfiling(e.newState);
+  }
 });
 
 node.start();
