@@ -1,3 +1,4 @@
 .lock-wscript
 build-cc
 node_modules
+daemon/settings.js
