@@ -1,6 +1,8 @@
 var vows = require('vows'),
     assert = require('assert');
 
+var Binary = require('binary');
+
 var Util = require('../lib/util');
 var logger = require('../lib/logger');
 
@@ -28,6 +30,20 @@ vows.describe('Bitcoin Utils').addBatch({
       assert.equal(target.toHex(),
                    "00000000000404cb0000000000000000" +
                    "00000000000000000000000000000000");
+    }
+  },
+
+  'A block header': {
+    topic: Util.decodeHex(
+        '0100000057cb9e9826b22b9cfa59d374d8cd9acd4759d6cd326583b412080000'
+      + '00000000f526d72b6a7c531db19642091b27eb964d8a238da753e0a0ef167ce5'
+      + 'e8467383c0b7104e122a0c1a0000000080000000000000000000000000000000'
+      + '0000000000000000000000000000000000000000000000000000000000000280'),
+    'hashes to the correct midstate': function (topic) {
+      var midstate = Util.sha256midstate(topic);
+      assert.equal(midstate.toHex(),
+                   "2a7ce7ed41c789515649417421a5f260" +
+                   "576461a477d440cda7355ddbab651f8c");
     }
   }
 }).export(module);

@@ -298,6 +298,57 @@ base58_decode (const Arguments& args)
 }
 
 
+int static FormatHashBlocks(void* pbuffer, unsigned int len)
+{
+  unsigned char* pdata = (unsigned char*)pbuffer;
+  unsigned int blocks = 1 + ((len + 8) / 64);
+  unsigned char* pend = pdata + 64 * blocks;
+  memset(pdata + len, 0, 64 * blocks - len);
+  pdata[len] = 0x80;
+  unsigned int bits = len * 8;
+  pend[-1] = (bits >> 0) & 0xff;
+  pend[-2] = (bits >> 8) & 0xff;
+  pend[-3] = (bits >> 16) & 0xff;
+  pend[-4] = (bits >> 24) & 0xff;
+  return blocks;
+}
+
+static Handle<Value>
+sha256_midstate (const Arguments& args)
+{
+  HandleScope scope;
+
+  if (args.Length() != 1) {
+    return VException("One argument expected: data Buffer");
+  }
+  if (!Buffer::HasInstance(args[0])) {
+    return VException("One argument expected: data Buffer");
+  }
+  v8::Handle<v8::Object> blk_buf = args[0]->ToObject();
+
+  // Reserve 64 extra bytes of memory for padding
+  unsigned int blk_len = Buffer::Length(blk_buf);
+  unsigned char *blk_data = (unsigned char *) malloc(blk_len + 64);
+
+  // Get block header
+  memcpy(blk_data, Buffer::Data(blk_buf), blk_len);
+
+  // Add SHA256 padding
+  FormatHashBlocks(blk_data, blk_len);
+
+  // Execute first half of first hash on block data
+  SHA256_CTX c;
+  SHA256_Init(&c);
+  SHA256_Transform(&c, blk_data);
+
+  // Note that we don't run SHA256_Final and return the middle state instead
+
+  Buffer *midstate_buf = Buffer::New(SHA256_DIGEST_LENGTH);
+  memcpy(Buffer::Data(midstate_buf), &c.h, SHA256_DIGEST_LENGTH);
+  return scope.Close(midstate_buf->handle_);
+}
+
+
 extern "C" void
 init (Handle<Object> target)
 {
@@ -306,4 +357,5 @@ init (Handle<Object> target)
   target->Set(String::New("pubkey_to_address256"), FunctionTemplate::New(pubkey_to_address256)->GetFunction());
   target->Set(String::New("base58_encode"), FunctionTemplate::New(base58_encode)->GetFunction());
   target->Set(String::New("base58_decode"), FunctionTemplate::New(base58_decode)->GetFunction());
+  target->Set(String::New("sha256_midstate"), FunctionTemplate::New(sha256_midstate)->GetFunction());
 }
