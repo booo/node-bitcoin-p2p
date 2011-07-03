@@ -76,6 +76,10 @@ new_keypair (const Arguments& args)
   memcpy(Buffer::Data(pub_buf), pub, pub_size);
   a->Set(Integer::New(1), pub_buf->handle_);
   
+  EC_KEY_free(pkey);
+  free(priv);
+  free(pub);
+
   return scope.Close(a);
 }
 
@@ -207,6 +211,9 @@ base58_encode (const Arguments& args)
   BN_free(bn);
   BN_free(bn58);
   BN_free(bn0);
+  BN_free(dv);
+  BN_free(rem);
+  BN_CTX_free(ctx);
   
   Local<String> ret = String::New(str);
   delete [] str;
@@ -263,7 +270,7 @@ base58_decode (const Arguments& args)
   unsigned int tmpLen = BN_num_bytes(bn);
   unsigned char *tmp = (unsigned char *)malloc(tmpLen);
   BN_bn2bin(bn, tmp);
-  
+
   // Trim off sign byte if present
   if (tmpLen >= 2 && tmp[tmpLen-1] == 0 && tmp[tmpLen-2] >= 0x80)
     tmpLen--;
@@ -278,6 +285,13 @@ base58_decode (const Arguments& args)
   char* data = Buffer::Data(buf);
   memset(data, 0, nLeadingZeros + tmpLen);
   memcpy(data+nLeadingZeros, tmp, tmpLen);
+
+  BN_free(bn58);
+  BN_free(bn);
+  BN_free(bnChar);
+  BN_CTX_free(ctx);
+  free(tmp);
+
   return scope.Close(buf->handle_);
 }
 
