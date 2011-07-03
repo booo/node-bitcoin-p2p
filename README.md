@@ -14,9 +14,9 @@ access to the data in the block chain (in real-time.)
 
 ## Prerequisites
 
-Make sure you have the latest build of [Node.js](http://nodejs.org/)
+Make sure you have the stable release of [Node.js](http://nodejs.org/)
 from [github](https://github.com/joyent/node) installed. This library
-uses functionality introduced in Node.js 0.5.0.
+has been tested using Node.js 0.4.8.
 
 You also need [npm](http://npmjs.org/) 1.0+.
 
