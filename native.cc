@@ -180,7 +180,10 @@ base58_encode (const Arguments& args)
     if (!BN_div(dv, rem, bn, bn58, ctx)) {
       return VException("BN_div failed");
     }
-    bn = dv;
+    if (bn != dv) {
+      BN_free(bn);
+      bn = dv;
+    }
     c = BN_get_word(rem);
     str[i] = BASE58_ALPHABET[c];
     i++;
@@ -211,7 +214,6 @@ base58_encode (const Arguments& args)
   BN_free(bn);
   BN_free(bn58);
   BN_free(bn0);
-  BN_free(dv);
   BN_free(rem);
   BN_CTX_free(ctx);
   
