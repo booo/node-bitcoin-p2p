@@ -12,54 +12,23 @@ access to the data in the block chain (in real-time.)
 
 # Installation
 
+Please refer to the wiki for detailed [installation
+instructions](https://github.com/bitcoinjs/node-bitcoin-p2p/wiki/Installation).
+
 ## Prerequisites
 
-Make sure you have the stable release of [Node.js](http://nodejs.org/)
-from [github](https://github.com/joyent/node) installed. This library
-has been tested using Node.js 0.4.8.
+* [Node.js](https://github.com/joyent/node) 0.4.8+
+* [NPM](https://github.com/isaacs/npm) 1.0+
+* [MongoDB](http://www.mongodb.org/)
+* [libgmp](http://gmplib.org/) (lib and headers)
 
-You also need [npm](http://npmjs.org/) 1.0+.
+## Installation
 
-MongoDB should be installed and running:
-
-``` sh
-sudo aptitude install mongodb
-```
-
-Please install a development version of the libgmp library. On
-Debian-based systems:
+This one-liner will install the latest version straight from the repository:
 
 ``` sh
-sudo aptitude install libgmp3-dev
-```
-
-## Option 1 - Installation via npm (recommended)
-
-This will install the current release from npm.
-
-``` sh
-sudo npm install bitcoin-p2p
-```
-
-This will install node-bitcoin-p2p locally. To install it globally,
-add the `-g` flag to the above command. For more information on npm
-1.0 link, see [this
-post](http://blog.nodejs.org/2011/04/06/npm-1-0-link/).
-
-## Option 2 - Installation from git
-
-This will install the latest version straight from the repository:
-
-``` sh
-# Download a copy of node-bitcoin-p2p from git
-git clone git://github.com/bitcoinjs/node-bitcoin-p2p.git --recursive
-cd node-bitcoin-p2p
-
-# Compile native components
-node-waf configure build
-
-# Download dependencies and install
-sudo npm link
+# Install node-bitcoin-p2p globally
+npm install bitcoin-p2p -g
 ```
 
 If you run into problems, please take a look at the "Troubleshooting"
