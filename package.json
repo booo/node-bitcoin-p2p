@@ -1,40 +1,40 @@
 {
-	"name": "bitcoin-p2p",
-	"version": "0.0.5",
-	"description": "Implementation of Bitcoin's peer-to-peer layer for Node.js",
-	"main": "./lib/bitcoin",
-	"keywords": [
-		"peer-to-peer",
-		"bitcoin",
-		"client"
-	],
+  "name": "bitcoin-p2p",
+  "version": "0.0.5",
+  "description": "Implementation of Bitcoin's peer-to-peer layer for Node.js",
+  "main": "./lib/bitcoin",
+  "keywords": [
+    "peer-to-peer",
+    "bitcoin",
+    "client"
+  ],
 
-	"scripts": {
-		"install": "node-waf configure build"
-	},
+  "scripts": {
+    "install": "node-waf configure build"
+  },
 
-	"dependencies": {
-		"buffertools": ">=1.0.3",
-		"binary": ">=0.1.9",
-		"bigint": ">=0.3.1",
-		"step": ">=0.0.4",
-		"winston": ">=0.2.6",
-		"irc": ">=0.1.2",
-		"webworker": "*",
-		"jsonrpc2": ">=0.0.5"
-	},
+  "dependencies": {
+    "buffertools": ">=1.0.3",
+    "binary": ">=0.1.9",
+    "bigint": ">=0.3.1",
+    "step": ">=0.0.4",
+    "winston": ">=0.2.6",
+    "irc": ">=0.1.2",
+    "webworker": "*",
+    "jsonrpc2": ">=0.0.5"
+  },
 
-	"author": "Stefan Thomas <justmoon@members.fsf.org> (http://www.justmoon.net)",
+  "author": "Stefan Thomas <justmoon@members.fsf.org> (http://www.justmoon.net)",
 
-	"contributors": [
-		"Andrew Schaaf <andrew@andrewschaaf.com>",
-		"Mike Hearn <hearn@google.com>",
-		"Robert Kieffer <robert@broofa.com>",
-		"Bill Casarin <bill@casarin.ca> (jb55.com)"
-	],
+  "contributors": [
+    "Andrew Schaaf <andrew@andrewschaaf.com>",
+    "Mike Hearn <hearn@google.com>",
+    "Robert Kieffer <robert@broofa.com>",
+    "Bill Casarin <bill@casarin.ca> (jb55.com)"
+  ],
 
-	"repository": {
-		"type": "git",
-		"url": "git://github.com/bitcoinjs/node-bitcoin-p2p.git"
-	}
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/bitcoinjs/node-bitcoin-p2p.git"
+  }
 }
