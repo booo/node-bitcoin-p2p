@@ -28,6 +28,10 @@
     "jsonrpc2": ">=0.0.5"
   },
 
+  "devDependencies": {
+    "vows": ">=0.5.8"
+  },
+
   "author": "Stefan Thomas <justmoon@members.fsf.org> (http://www.justmoon.net)",
 
   "contributors": [
