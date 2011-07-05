@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 
 var sys = require('sys');
+var path = require('path');
 var logger = require('../lib/logger');
 
 var args = process.argv.slice(2);
@@ -19,6 +20,9 @@ var usage = "usage: bitcoinjs <command> [<args>] ...\n" +
 
 switch (command) {
 case "run":
+  // This modifies the argv array such that we simulate calling the start
+  // script direct, i.e. all parameters are passed through.
+  process.argv.splice(1, 2, path.resolve(__dirname, '../daemon/start.js'));
   require("../daemon/start");
   break;
 case "help":
