@@ -24,7 +24,7 @@ instructions](https://github.com/bitcoinjs/node-bitcoin-p2p/wiki/Installation).
 
 ## Installation
 
-This one-liner will install the latest version straight from the repository:
+This one-liner will install the latest version straight from NPM:
 
 ``` sh
 # Install node-bitcoin-p2p globally
