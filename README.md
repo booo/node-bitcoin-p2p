@@ -197,13 +197,15 @@ are the available log levels:
 
 - `netdbg` - Networking events (sending/receiving messages)
 - `bchdbg` - Block chain events (adding blocks)
+- `rpcdbg` - JSON-RPC API events (requests/responses)
+- `scrdbg` - Script interpreter events (custom scripts, errors)
 - `debug` - Other verbose logging
 - `info` - General information and status messages
 - `warn` - Something rare happened (e.g. strange pubKeyScript)
 - `error` - Something bad happened
 
-If you run node-bitcoin-p2p from a compatible shell, you should get a
-fairly nice series of log messages as it is booting up.
+The XXXdbg levels can be enabled individually by editing
+lib/logger.js.
 
 # Tests
 
