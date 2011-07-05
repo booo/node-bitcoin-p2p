@@ -9,6 +9,10 @@
     "client"
   ],
 
+  "bin": {
+    "bitcoinjs": "./bin/bitcoinjs"
+  },
+
   "scripts": {
     "install": "node-waf configure build"
   },

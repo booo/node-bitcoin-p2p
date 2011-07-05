@@ -1,0 +1,30 @@
+#!/usr/bin/env node
+
+var sys = require('sys');
+var logger = require('../lib/logger');
+
+var args = process.argv.slice(2);
+var command = args.shift();
+
+if (!command) {
+  command = "help";
+}
+
+var usage = "usage: bitcoinjs <command> [<args>] ...\n" +
+  "\n" +
+  "The most commonly used commands are:\n" +
+  "  run      Run node-bitcoin-p2p daemon in foreground\n" +
+  "\n" +
+  "Report bugs via https://github.com/bitcoinjs/node-bitcoin-p2p/issues\n";
+
+switch (command) {
+case "run":
+  require("../daemon/start");
+  break;
+case "help":
+  sys.puts(usage);
+  break;
+default:
+  logger.error("Unknown command: '"+command+"'");
+  sys.puts(usage);
+}
