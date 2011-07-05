@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 
+var fs = require('fs');
 var sys = require('sys');
 var path = require('path');
 var logger = require('../lib/logger');
@@ -25,10 +26,44 @@ case "run":
   process.argv.splice(1, 2, path.resolve(__dirname, '../daemon/start.js'));
   require("../daemon/start");
   break;
+case "make-man":
+  // Regenerate man pages - this is intentionally undocumented (for now)
+  // since it's only used by developers with commit rights.
+  var Ronn = require('ronn').Ronn;
+  var docsPath = path.resolve(__dirname, '../doc/');
+  var roffPath = path.resolve(__dirname, '../man/');
+  fs.mkdirSync(roffPath, 0777);
+  fs.readdirSync(docsPath)
+    .forEach(function (file) {
+      var ronn = new Ronn(fs.readFileSync(docsPath + '/' + file));
+      var roff = ronn.roff();
+      fs.writeFileSync(roffPath + '/' + file.replace(/\.md$/, '.1'),
+                       roff);
+    });
+  break;
 case "help":
-  sys.puts(usage);
+  if (args.length >= 1) {
+    if (args[0] == "bitcoinjs" || args[0] == "help") {
+      sh("man", [path.resolve(__dirname, '../man/bitcoinjs.1')]);
+    } else {
+      logger.error("No help section found for '"+args[0]+"'");
+      process.exit(1);
+    }
+  } else {
+    sys.puts(usage);
+  }
   break;
 default:
   logger.error("Unknown command: '"+command+"'");
   sys.puts(usage);
 }
+
+
+function sh(command, args) {
+  var stdio = process.binding("stdio");
+  var fds = [ stdio.stdinFD || 0
+            , stdio.stdoutFD || 1
+            , stdio.stderrFD || 2 ];
+  var opts = { customFds : fds };
+  require('child_process').spawn(command, args, opts);
+};
