@@ -27,7 +27,8 @@
     "winston": ">=0.2.6",
     "irc": ">=0.1.2",
     "webworker": "*",
-    "jsonrpc2": ">=0.0.5"
+    "jsonrpc2": ">=0.0.5",
+    "opts": ">=1.2.1"
   },
 
   "devDependencies": {
