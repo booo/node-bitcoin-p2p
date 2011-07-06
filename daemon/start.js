@@ -2,26 +2,29 @@
 
 var sys = require('sys');
 var path = require('path');
-var opts = require('opts');
+var yanop = require('yanop');
 
 // Load node-bitcoin-p2p
 var Bitcoin = require('../lib/bitcoin');
 var logger = require('../lib/logger');
 
 // Command-line arguments parsing
-var options = [{
-  short: 'c',
-  long: 'config',
-  description: 'Configuration file',
-  value: true
-},{
-  long: 'livenet',
-  description: 'Use the regular network (default)'
-},{
-  long: 'testnet',
-  description: 'Use the test network'
-}];
-opts.parse(options, true);
+var opts = yanop.simple({
+  config: {
+    type: yanop.string,
+    short: 'c',
+    description: 'Configuration file',
+    default: './settings'
+  },
+  livenet: {
+    type: yanop.flag,
+    description: 'Use the regular network (default)'
+  },
+  testnet: {
+    type: yanop.flag,
+    description: 'Use the test network'
+  }
+});
 
 // Print welcome message
 require("./welcome");
@@ -29,7 +32,7 @@ require("./welcome");
 // Load user-defined settings
 logger.info('Loading configuration');
 try {
-  var configPath = opts.get('config') || './settings';
+  var configPath = opts.config;
   var cfg = require(configPath);
 } catch (e) {
   if (/^Cannot find module /.test(e.message)) {
@@ -56,9 +59,9 @@ if (!(cfg instanceof Bitcoin.Settings)) {
 }
 
 // Apply configuration from the command line
-if (opts.get('livenet')) {
+if (opts.livenet) {
   cfg.setLivenetDefaults();
-} else if (opts.get('testnet')) {
+} else if (opts.testnet) {
   cfg.setTestnetDefaults();
 }
 

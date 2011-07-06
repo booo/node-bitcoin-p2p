@@ -28,7 +28,7 @@
     "irc": ">=0.1.2",
     "webworker": "*",
     "jsonrpc2": ">=0.0.5",
-    "opts": ">=1.2.1"
+    "yanop": ">=0.1.1"
   },
 
   "devDependencies": {
