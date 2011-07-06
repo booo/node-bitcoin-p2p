@@ -13,8 +13,7 @@ var opts = yanop.simple({
   config: {
     type: yanop.string,
     short: 'c',
-    description: 'Configuration file',
-    default: './settings'
+    description: 'Configuration file'
   },
   addnode: {
     type: yanop.list,
@@ -61,7 +60,7 @@ require("./welcome");
 // Load user-defined settings
 logger.info('Loading configuration');
 try {
-  var configPath = opts.config;
+  var configPath = opts.config ? path.resolve(opts.config) : './settings';
   var cfg = require(configPath);
 } catch (e) {
   if (/^Cannot find module /.test(e.message)) {
