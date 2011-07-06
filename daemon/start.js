@@ -16,6 +16,18 @@ var opts = yanop.simple({
     description: 'Configuration file',
     default: './settings'
   },
+  addnode: {
+    type: yanop.list,
+    description: 'Add a node to connect to'
+  },
+  connect: {
+    type: yanop.string,
+    description: 'Connect only to the specified node'
+  },
+  nolisten: {
+    type: yanop.flag,
+    description: 'Disable incoming connections'
+  },
   livenet: {
     type: yanop.flag,
     description: 'Use the regular network (default)'
@@ -23,6 +35,22 @@ var opts = yanop.simple({
   testnet: {
     type: yanop.flag,
     description: 'Use the test network'
+  },
+  port: {
+    type: yanop.scalar,
+    description: 'Port to listen for incoming connections'
+  },
+  rpcuser: {
+    type: yanop.string,
+    description: 'Username for JSON-RPC connections'
+  },
+  rpcpassword: {
+    type: yanop.string,
+    description: 'Password for JSON-RPC connections'
+  },
+  rpcport: {
+    type: yanop.scalar,
+    description: 'Listen for JSON-RPC connections on <port> (default: 8432)'
   }
 });
 
@@ -59,10 +87,43 @@ if (!(cfg instanceof Bitcoin.Settings)) {
 }
 
 // Apply configuration from the command line
+if (opts.addnode.length) {
+  cfg.network.initialPeers = cfg.network.initialPeers.concat(opts.addnode);
+}
+if (opts.connect) {
+  cfg.network.connect = opts.connect;
+}
+if (opts.nolisten) {
+  cfg.network.noListen = opts.nolisten;
+}
 if (opts.livenet) {
   cfg.setLivenetDefaults();
 } else if (opts.testnet) {
   cfg.setTestnetDefaults();
+}
+if (opts.port) {
+  opts.port = +opts.port;
+  if (opts.port > 65535 || opts.port < 0) {
+    logger.error('Invalid port setting: "'+opts.port+'"');
+  } else {
+    cfg.network.port = opts.port;
+  }
+}
+if (opts.rpcuser) {
+  cfg.jsonrpc.enable = true;
+  cfg.jsonrpc.username = opts.rpcuser;
+}
+if (opts.rpcpassword) {
+  cfg.jsonrpc.enable = true;
+  cfg.jsonrpc.password = opts.rpcpassword;
+}
+if (opts.rpcport) {
+  opts.rpcport = +opts.rpcport;
+  if (opts.port > 65535 || opts.port < 0) {
+    logger.error('Invalid port setting: "'+opts.rpcport+'"');
+  } else {
+    cfg.jsonrpc.port = opts.rpcport;
+  }
 }
 
 // Start node
