@@ -28,166 +28,28 @@ This one-liner will install the latest version straight from NPM:
 
 ``` sh
 # Install node-bitcoin-p2p globally
-npm install bitcoin-p2p -g
+sudo npm install bitcoin-p2p -g
 ```
 
 If you run into problems, please take a look at the "Troubleshooting"
 section below or go to the Issues tab to open a new ticket.
 
-# Upgrading
-
-When upgrading node-bitcoin-p2p it is a good idea to reset its
-database:
-
-``` sh
-mongo bitcoin --eval "db.dropDatabase()"
-```
-
-This won't be necessary once node-bitcoin-p2p is more stable, but for
-now new versions often break database compatibility and since it only
-takes about ten minutes to regenerate it makes sense to just reset it.
-
 # Usage
 
-Several examples on how to start up the library are provided in the
-`examples/` folder. To run an example simply call it with node:
+For your first experience with the BitcoinJS daemon, try running it
+right from the terminal.
 
 ``` sh
-node examples/simple.js
+bitcoinjs run --testnet
 ```
 
-*It's highly recommended that you run bitcoind in front of bitcoin-p2p at this
-time (simply have bitcoind running before launching bitcoin-p2p). Forward-facing
-bitcoin-p2p nodes have not been well tested and may contain bugs that compromise
-its security.*
+You can find out more about the various functions of the command line
+utility via the help feature:
 
-The most basic way to start node-bitcoin-p2p in your own code  goes
-like this:
-
-``` js
-var Bitcoin = require('bitcoin-p2p');
-
-node = new Bitcoin.Node();
-node.start();
+``` sh
+bitcoinjs help
 ```
 
-All the other examples presuppose you've already started a node using
-this code.
-
-Once the node is running it will automatically connect to the Bitcoin
-network and begin downloading blocks. There are two major ways to get
-information from the library: Events and Storage.
-
-## Events
-
-Get a reference to the BlockChain object to start listening to block
-chain changes:
-
-``` js
-var chain = node.getBlockChain();
-// Log each block as it's added to the block chain
-chain.addListener('blockSave', function (e) {
-    console.log(e.block);
-});
-```
-
-BlockChain emits the following events:
-
-**`blockAdd`** - Triggered right before a block is saved to storage
-
-- `block` The Block object for the block in question
-- `txs` The transactions attached to the block
-- `chain` The BlockChain object
-
-**`blockSave`** - Triggered right after a block is saved to storage
-
-- `block` The Block object for the block in question
-- `txs` The transactions attached to the block
-- `chain` The BlockChain object
-
-**`blockRevoke`** - Triggered as the main chain is rolled back due to
-a split *(warning: block chain reorg is still buggy)*
-
-- `block` The Block object for the block in question
-- `txs` The transactions attached to the block
-- `chain` The BlockChain object
-
-**`txAdd`** - Triggered right before a transaction is saved to storage
-
-- `block` Containing Block object
-- `index` The index of the transaction in question
-- `tx` The Transaction object
-- `chain` The BlockChain object
-
-**`txSave`** - Triggered right after a transaction is saved to storage
-
-- `block` Containing Block object
-- `index` The index of the transaction in question
-- `tx` The Transaction object
-- `chain` The BlockChain object
-
-**`txRevoke`** - Triggered when a confirmed transaction is reverted as
-the containing block is no longer in the main chain *(warning: block
-chain reorg is still buggy)*
-
-- `block` Containing Block object
-- `index` The index of the transaction in question
-- `tx` The Transaction object
-- `chain` The BlockChain object
-
-TransactionStore emits the following events:
-
-**`txNotify`** - A transaction was added to the memory pool
-
-- `tx` The Transaction object
-- `store` The TransactionStore object
-
-**`txCancel`** - A transaction was removed from the memory pool
-  (because it was confirmed or because a conflicting transaction was
-  confirmed)
-
-- `tx` The Transaction object
-- `txHash` The transaction's hash in base64
-- `store` The TransactionStore object
-
-If the setting `feature.liveAccounting` is enabled, you can also
-listen to `txNotify:[pubKeyHash as base64]` and `txCancel:[pubKeyHash as
-base64]` to get events for a specific address only.
-
-## Storage
-
-`node-bitcoin-p2p` uses the Mongoose ORM layer. You can find the
-schemas for the database objects in the source code under lib/schema/.
-
-All the models are instantiated by the `Storage` class, so all you
-need to do is get a reference to that from the Bitcoin `Node` and
-you're good to go:
-
-``` js
-var storage = node.getStorage();
-storage.Transaction.findOne({hash: hash}, function (err, tx) {
-    // In real code, you'd handle the error of course
-    if (err) return;
-
-    storage.Block.findOne({_id: tx.block}, function (err, block) {
-        if (err) return;
-
-        // Do something fancy here...
-    });
-});
-```
-
-There are also some convenience functions you can use:
-
-``` js
-var chain = node.getBlockChain();
-chain.getBlockByHash(hash, function (err, block) {
-    if (err) return;
-
-    // Do something with the Block
-    console.log(block);
-});
-```
 
 ## Logging
 
@@ -207,6 +69,33 @@ are the available log levels:
 The XXXdbg levels can be enabled individually by editing
 lib/logger.js.
 
+
+## Advanced usage
+
+`node-bitcoin-p2p` is not only a daemon, but also a Node.js
+module/library. In most cases it's best to use the daemon via RPC. But
+sometimes you need the extra control that comes with directly linking
+to the code.
+
+For details on developing with `node-bitcoin-p2p` as a library, take a
+look at the Developer Guide on the
+[wiki](https://github.com/bitcoinjs/node-bitcoin-p2p/wiki).
+
+
+# Upgrading
+
+When upgrading node-bitcoin-p2p it is a good idea to reset its
+database:
+
+``` sh
+mongo bitcoin --eval "db.dropDatabase()"
+```
+
+This won't be necessary once node-bitcoin-p2p is more stable, but for
+now new versions often break database compatibility and since it only
+takes about ten minutes to regenerate it makes sense to just reset it.
+
+
 # Tests
 
 To run the test, please install [Vows](http://vowsjs.org) and run the
@@ -221,7 +110,6 @@ vows test/* --spec
 The library is currently alpha quality. Here are some things it
 currently lacks:
 
-- Correct handling of block chain splits
 - Verify difficulty transitions
 - Accept incoming Bitcoin connections (optionally)
 - Store hashes etc. as MongoDB BinData instead of base64
