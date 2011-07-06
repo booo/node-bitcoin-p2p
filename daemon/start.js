@@ -38,6 +38,7 @@ var opts = yanop.simple({
   },
   port: {
     type: yanop.scalar,
+    short: 'p',
     description: 'Port to listen for incoming connections'
   },
   rpcuser: {
