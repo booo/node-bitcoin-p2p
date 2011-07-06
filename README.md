@@ -98,8 +98,8 @@ takes about ten minutes to regenerate it makes sense to just reset it.
 
 # Tests
 
-To run the test, please install [Vows](http://vowsjs.org) and run the
-following command:
+To run the test suite, please install [Vows](http://vowsjs.org) and
+run the following command:
 
 ``` sh
 vows test/* --spec
