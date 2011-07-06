@@ -14,6 +14,12 @@ var options = [{
   long: 'config',
   description: 'Configuration file',
   value: true
+},{
+  long: 'livenet',
+  description: 'Use the regular network (default)'
+},{
+  long: 'testnet',
+  description: 'Use the test network'
 }];
 opts.parse(options, true);
 
@@ -39,6 +45,21 @@ try {
   } else {
     throw e;
   }
+}
+
+if (!(cfg instanceof Bitcoin.Settings)) {
+  logger.error('Settings file is invalid!\n');
+  sys.puts("Please see\n" + 
+           path.resolve(__dirname, './settings.example.js') + "\n" +
+           "for an example config file.\n");
+  process.exit(1);
+}
+
+// Apply configuration from the command line
+if (opts.get('livenet')) {
+  cfg.setLivenetDefaults();
+} else if (opts.get('testnet')) {
+  cfg.setTestnetDefaults();
 }
 
 // Start node
