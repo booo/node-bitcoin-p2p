@@ -51,6 +51,22 @@ var opts = yanop.simple({
   rpcport: {
     type: yanop.scalar,
     description: 'Listen for JSON-RPC connections on <port> (default: 8432)'
+  },
+  netdbg: {
+    type: yanop.flag,
+    description: 'Enable networking debug messages'
+  },
+  bchdbg: {
+    type: yanop.flag,
+    description: 'Enable block chain debug messages'
+  },
+  rpcdbg: {
+    type: yanop.flag,
+    description: 'Enable JSON RPC debug messages'
+  },
+  scrdbg: {
+    type: yanop.flag,
+    description: 'Enable script parser/interpreter debug messages'
   }
 });
 
@@ -124,6 +140,18 @@ if (opts.rpcport) {
   } else {
     cfg.jsonrpc.port = opts.rpcport;
   }
+}
+if (opts.netdbg) {
+  logger.logger.levels.netdbg = 1;
+}
+if (opts.bchdbg) {
+  logger.logger.levels.bchdbg = 1;
+}
+if (opts.rpcdbg) {
+  logger.logger.levels.rpcdbg = 1;
+}
+if (opts.scrdbg) {
+  logger.logger.levels.scrdbg = 1;
 }
 
 // Start node
