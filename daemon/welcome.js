@@ -15,4 +15,4 @@ sys.puts(
   "http://bitcoinjs.org/                                `/+++++++++++: \n" +
   "\n" +
   "This program is free software; you can redistribute it and/or modify\n" +
-  "it under terms of the MIT license.\n");
+  "it under the terms of the MIT license.\n");
