@@ -1,0 +1,34 @@
+.\" Generated with Ronnjs/v0.1
+.\" http://github.com/kapouer/ronnjs/
+.
+.TH "BITCOINJS\-DB\-DROP" "1" "July 2011" "" ""
+.
+.SH "NAME"
+\fBbitcoinjs-db-drop\fR \-\- delete database
+.
+.SH "SYNOPSIS"
+.
+.nf
+bitcoinjs db\-drop [\-\-config=<path>]
+.
+.fi
+.
+.SH "OPTIONS"
+.
+.IP "\(bu" 4
+\fB\-c\fR <file>, \fB\-\-config\fR=<file>:
+Path to config file\.
+.
+.IP "\(bu" 4
+\fB\-h\fR, \fB\-\-help\fR:
+Inline command help\.
+.
+.IP "" 0
+.
+.SH "DESCRIPTION"
+Runs MongoDB\'s dropDatabase on the configured database\. This may take
+a second as any space reserved by that database is freed\.
+.
+.P
+Together with \fBnpm rm bitcoin\-p2p \-g\fR this should result in a complete
+uninstallation\.

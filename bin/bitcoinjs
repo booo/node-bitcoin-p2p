@@ -27,6 +27,15 @@ case "run":
   process.argv.splice(1, 2, path.resolve(__dirname, '../daemon/start.js'));
   require("../daemon/start");
   break;
+
+case "db-reset":
+case "db-drop":
+  // This modifies the argv array such that we simulate calling the start
+  // script direct, i.e. all parameters are passed through.
+  process.argv.splice(1, 2, path.resolve(__dirname, '../daemon/'+command+'.js'));
+  require("../daemon/"+command);
+  break;
+
 case "test":
   var vowsBin = path.resolve(__dirname, "../node_modules/vows/bin/vows");
   var testDir = path.resolve(__dirname, "../test/");
@@ -35,6 +44,7 @@ case "test":
   args.unshift('--spec');
   sh("vows", testCases.concat(args));
   break;
+
 case "make-man":
   // Regenerate man pages - this is intentionally undocumented (for now)
   // since it's only used by developers with commit rights.
@@ -59,7 +69,7 @@ case "help":
   if (args.length >= 1) {
     if (args[0] == "bitcoinjs" || args[0] == "help") {
       sh("man", [path.resolve(__dirname, '../man/bitcoinjs.1')]);
-    } else if (~["run", "test"].indexOf(args[0])) {
+    } else if (~["run", "db-reset", "db-drop", "test"].indexOf(args[0])) {
       sh("man", [path.resolve(__dirname, '../man/'+args[0]+'.1')]);
     } else {
       logger.error("No help section found for '"+args[0]+"'");
@@ -69,6 +79,7 @@ case "help":
     sys.puts(usage);
   }
   break;
+
 default:
   logger.error("Unknown command: '"+command+"'");
   sys.puts(usage);

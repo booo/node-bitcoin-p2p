@@ -1,0 +1,34 @@
+.\" Generated with Ronnjs/v0.1
+.\" http://github.com/kapouer/ronnjs/
+.
+.TH "BITCOINJS\-DB\-RESET" "1" "July 2011" "" ""
+.
+.SH "NAME"
+\fBbitcoinjs-db-reset\fR \-\- delete all data
+.
+.SH "SYNOPSIS"
+.
+.nf
+bitcoinjs db\-reset [\-\-config=<path>]
+.
+.fi
+.
+.SH "OPTIONS"
+.
+.IP "\(bu" 4
+\fB\-c\fR <file>, \fB\-\-config\fR=<file>:
+Path to config file\.
+.
+.IP "\(bu" 4
+\fB\-h\fR, \fB\-\-help\fR:
+Inline command help\.
+.
+.IP "" 0
+.
+.SH "DESCRIPTION"
+Delete\'s all collections (tables) from the mongodb database\. You need
+to run this command if you want to switch networks\.
+.
+.P
+Note that it is recommended that you reset the database and
+re\-download the block chain when upgrading bitcoin\-p2p\.

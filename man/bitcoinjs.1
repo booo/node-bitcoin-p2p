@@ -30,6 +30,15 @@ Run the BitcoinJS daemon in the foreground\. See \fBbitcoinjs help
 run\fR\|\.
 .
 .IP "\(bu" 4
+db\-reset
+Removes all tables from the database\.
+.
+.IP "\(bu" 4
+db\-drop
+Drops the database\. This function is slightly slower than db\-reset,
+because the allocated hard drive space is being freed up\.
+.
+.IP "\(bu" 4
 test:
 Executes the BitcoinJS unit tests, powered by VowsJS\. By default the
 \-\-spec format is used\. Other available formats are XUnit, JSON and
