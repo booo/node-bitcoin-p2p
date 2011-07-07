@@ -17,7 +17,13 @@
     "install": "node-waf configure build"
   },
 
-  "man": "./man/bitcoinjs.1",
+  "man": [
+    "./man/bitcoinjs.1",
+    "./man/run.1",
+    "./man/db-reset.1",
+    "./man/db-drop.1",
+    "./man/test.1"
+  ],
 
   "dependencies": {
     "buffertools": ">=1.0.3",
