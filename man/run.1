@@ -1,0 +1,78 @@
+.\" Generated with Ronnjs/v0.1
+.\" http://github.com/kapouer/ronnjs/
+.
+.TH "BITCOINJS\-RUN" "1" "July 2011" "" ""
+.
+.SH "NAME"
+\fBbitcoinjs-run\fR \-\- run daemon in foreground
+.
+.SH "SYNOPSIS"
+.
+.nf
+bitcoinjs run [\-\-testnet | \-\-livenet] [<args>]
+.
+.fi
+.
+.SH "OPTIONS"
+.
+.IP "\(bu" 4
+\fB\-c\fR <file>, \fB\-\-config\fR=<file>:
+Path to config file\.
+.
+.IP "\(bu" 4
+\fB\-\-addnode\fR:
+Add a node to connect to\.
+.
+.IP "\(bu" 4
+\fB\-\-nolisten\fR:
+Disable incoming connections\.
+.
+.IP "\(bu" 4
+\fB\-\-livenet\fR:
+Connect to the main Bitcoin blockchain (default)\.
+.
+.IP "\(bu" 4
+\fB\-\-testnet\fR:
+Connect to the test network
+.
+.IP "\(bu" 4
+\fB\-\-port\fR=<port>:
+Port to listen for incoming peer\-to\-peer connections\.
+.
+.IP "\(bu" 4
+\fB\-\-rpcuser\fR=<username>:
+Username for JSON\-RPC connections\.
+.
+.IP "\(bu" 4
+\fB\-\-rpcpassword\fR=<password>:
+Password for JSON\-RPC connections\.
+.
+.IP "\(bu" 4
+\fB\-\-rpcport\fR=<port>:
+Listen for JSON\-RPC connections on <port> (default: 8432)
+.
+.IP "\(bu" 4
+\fB\-\-netdbg\fR:
+Enable networking debug messages\.
+.
+.IP "\(bu" 4
+\fB\-\-bchdbg\fR:
+Enable block chain debug messages\.
+.
+.IP "\(bu" 4
+\fB\-\-rpcdbg\fR:
+Enable JSON RPC debug messages\.
+.
+.IP "\(bu" 4
+\fB\-\-scrdbg\fR:
+Enable script parser/interpreter debug messages\.
+.
+.IP "\(bu" 4
+\fB\-h\fR, \fB\-\-help\fR:
+Inline command help\.
+.
+.IP "" 0
+.
+.SH "DESCRIPTION"
+Runs the BitcoinJS daemon in the foreground\. Useful for testing and
+for the initial blockchain download\.
