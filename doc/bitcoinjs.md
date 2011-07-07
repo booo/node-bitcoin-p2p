@@ -20,10 +20,11 @@ node-bitcoin-p2p's daemon.
   Run the BitcoinJS daemon in the foreground. See `bitcoinjs help
   run`.
 * db-reset
-  Removes all tables from the database.
+  Removes all tables from the database. See `bitcoinjs help db-reset`.
 * db-drop
   Drops the database. This function is slightly slower than db-reset,
-  because the allocated hard drive space is being freed up.
+  because the allocated hard drive space is being freed up. See
+  `bitcoinjs help db-drop`.
 * test:
   Executes the BitcoinJS unit tests, powered by VowsJS. By default the
   --spec format is used. Other available formats are XUnit, JSON and
