@@ -19,6 +19,10 @@ node-bitcoin-p2p's daemon.
 * run:
   Run the BitcoinJS daemon in the foreground. See `bitcoinjs help
   run`.
+* test:
+  Executes the BitcoinJS unit tests, powered by VowsJS. By default the
+  --spec format is used. Other available formats are XUnit, JSON and
+  dot matrix. See `bitcoinjs help test`.
 
 ## BUGS
 

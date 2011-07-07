@@ -1,0 +1,69 @@
+.\" Generated with Ronnjs/v0.1
+.\" http://github.com/kapouer/ronnjs/
+.
+.TH "BITCOINJS\-TEST" "1" "July 2011" "" ""
+.
+.SH "NAME"
+\fBbitcoinjs-test\fR \-\- unit tests
+.
+.SH "SYNOPSIS"
+.
+.nf
+bitcoinjs test [\-\-json | \-\-xunit | \-\-dot\-matrix]
+.
+.fi
+.
+.SH "OPTIONS"
+.
+.IP "\(bu" 4
+\fB\-v\fR, \fB\-\-verbose\fR:
+Enable verbose output\.
+.
+.IP "\(bu" 4
+\fB\-w\fR, \fB\-\-watch\fR:
+Keep watching files for changes\.
+.
+.IP "\(bu" 4
+\fB\-s\fR, \fB\-\-silent\fR:
+Don\'t print a report\.
+.
+.IP "\(bu" 4
+\fB\-m\fR <pattern>:
+Only run tests matching this string\.
+.
+.IP "\(bu" 4
+\fB\-m\fR <pattern>:
+Only run tests matching this regular expression\.
+.
+.IP "\(bu" 4
+\-\-json`:
+Display the results in JSON format\.
+.
+.IP "\(bu" 4
+\-\-spec`:
+Display the results in specification format (default)\.
+.
+.IP "\(bu" 4
+\-\-dot\-matrix`:
+Display the results as a dot matrix\.
+.
+.IP "\(bu" 4
+\-\-xunit`:
+Display the results in XUnit format\.
+.
+.IP "\(bu" 4
+\-\-version`:
+Print version\.
+.
+.IP "\(bu" 4
+\fB\-h\fR, \fB\-\-help\fR:
+This help file\.
+.
+.IP "" 0
+.
+.SH "DESCRIPTION"
+Runs the unit tests included with BitcoinJS\. You can use this to make
+sure everything is set up right\.
+.
+.P
+Note that the tests rely on a mongodb database running on localhost\.
