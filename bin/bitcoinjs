@@ -32,14 +32,18 @@ case "make-man":
   var Ronn = require('ronn').Ronn;
   var docsPath = path.resolve(__dirname, '../doc/');
   var roffPath = path.resolve(__dirname, '../man/');
-  fs.mkdirSync(roffPath, 0777);
-  fs.readdirSync(docsPath)
-    .forEach(function (file) {
-      var ronn = new Ronn(fs.readFileSync(docsPath + '/' + file));
-      var roff = ronn.roff();
-      fs.writeFileSync(roffPath + '/' + file.replace(/\.md$/, '.1'),
-                       roff);
-    });
+  path.exists(roffPath, function (exists) {
+    if (!exists) {
+      fs.mkdirSync(roffPath, 0777);
+    }
+    fs.readdirSync(docsPath)
+      .forEach(function (file) {
+        var ronn = new Ronn(fs.readFileSync(docsPath + '/' + file));
+        var roff = ronn.roff();
+        fs.writeFileSync(roffPath + '/' + file.replace(/\.md$/, '.1'),
+                         roff);
+      });
+  });
   break;
 case "help":
   if (args.length >= 1) {
