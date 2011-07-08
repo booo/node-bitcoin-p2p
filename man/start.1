@@ -1,0 +1,105 @@
+.\" Generated with Ronnjs/v0.1
+.\" http://github.com/kapouer/ronnjs/
+.
+.TH "BITCOINJS\-START" "1" "July 2011" "" ""
+.
+.SH "NAME"
+\fBbitcoinjs-start\fR \-\- run daemon in background
+.
+.SH "SYNOPSIS"
+.
+.nf
+bitcoinjs start [<args>] [\-\- <daemon\-args>]
+.
+.fi
+.
+.SH "OPTIONS"
+.
+.IP "\(bu" 4
+\fB\-m\fR <times>:
+Only run the daemon a maximum of <times> times\.
+.
+.IP "\(bu" 4
+\fB\-l\fR <logfile>:
+Log the output of the daemon manager to <logfile>\.
+.
+.IP "\(bu" 4
+\fB\-o\fR <outfile>:
+Log the output of the daemon to <outfile>\.
+.
+.IP "\(bu" 4
+\fB\-e\fR <errfile>:
+Log the stderr output of the daemon to <errfile>\.
+.
+.IP "\(bu" 4
+\fB\-p\fR <path>:
+Base path for the daemon manager (for pid files, etc\.)\.
+.
+.IP "\(bu" 4
+\fB\-c\fR <command>:
+Command to execute as the interpreter (default: node)\.
+.
+.IP "\(bu" 4
+\fB\-a\fR:
+Append logs\.
+.
+.IP "\(bu" 4
+\fB\-\-pidfile\fR=<pidfile>:
+Path to the pidfile\.
+.
+.IP "\(bu" 4
+\fB\-\-minUptime\fR=<uptime>:
+Minimum uptime (milliseconds) for the daemon to not be considered
+"spinning"\.
+.
+.IP "\(bu" 4
+\fB\-\-spinSleepTime\fR=<delay>:
+Time to wait (milliseconds) between launches when daemon is
+spinning\.
+.
+.IP "\(bu" 4
+\fB\-d\fR, \fB\-\-debug\fR:
+Forces the daemon manager to log debug output\.
+.
+.IP "\(bu" 4
+\fB\-v\fR, \fB\-\-verbose\fR:
+Turns on the verbost messages from the daemon manager\.
+.
+.IP "\(bu" 4
+\fB\-s\fR, \fB\-\-silent\fR:
+Run the daemon silencing stdout and stderr\.
+.
+.IP "\(bu" 4
+\fB\-h\fR, \fB\-\-help\fR:
+Inline command help\. Warning the help is from an internal tool and
+not quite accurate, please refer to this manpage instead\.
+.
+.IP "" 0
+.
+.SH "DESCRIPTION"
+This command starts and daemonizes a manager process which in turn
+starts a process containing the BitcoinJS daemon\. If the daemon stops
+or crashes, the daemon manager will automatically restart it\.
+.
+.P
+You can pass arguments both to the daemon manager and the daemon
+itself\. The daemon manager arguments must come first\. If you want to
+pass arguments to the daemon, add the delimiter \fB\-\-\fR and then the
+arguments for the daemon\. To find out what arguments the daemon
+accepts, please see \fBbitcoinjs help run\fR\|\.
+.
+.SH "SEE ALSO"
+.
+.IP "\(bu" 4
+bitcoinjs\-run(1)
+.
+.IP "\(bu" 4
+bitcoinjs\-stop(1)
+.
+.IP "\(bu" 4
+bitcoinjs\-restart(1)
+.
+.IP "\(bu" 4
+bitcoinjs\-list(1)
+.
+.IP "" 0

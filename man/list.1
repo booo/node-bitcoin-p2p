@@ -1,0 +1,65 @@
+.\" Generated with Ronnjs/v0.1
+.\" http://github.com/kapouer/ronnjs/
+.
+.TH "BITCOINJS\-LIST" "1" "July 2011" "" ""
+.
+.SH "NAME"
+\fBbitcoinjs-list\fR \-\- list daemon processes
+.
+.SH "SYNOPSIS"
+.
+.nf
+bitcoinjs list
+.
+.fi
+.
+.SH "DESCRIPTION"
+This command shows a list of currently running BitcoinJS daemon
+processes\.
+.
+.SH "OUTPUT FORMAT"
+Here is some example output from \fBbitcoinjs list\fR:
+.
+.IP "" 4
+.
+.nf
+info: Running action: list
+info: Forever processing file: daemon/start\.js
+info: Forever processes running
+  [0] node daemon/start\.js [5261, 5260] /var/log/V620\.log 0:0:0:2\.903
+.
+.fi
+.
+.IP "" 0
+.
+.IP "\(bu" 4
+\fB[0]\fR
+ID of the process, can be used to refer to the process when
+stopping or restarting\. See \fBbitcoinjs help stop\fR\|\.
+.
+.IP "\(bu" 4
+\fBnode\fR:
+Interpreter, usually "node"\.
+.
+.IP "\(bu" 4
+\fBdaemon/start\.js\fR:
+Here will be displayed the startup script\. For node\-bitcoin\-p2p
+this is daemon/start\.js\.
+.
+.IP "\(bu" 4
+\fB[5261, 5260]\fR:
+This are the process IDs\. 5260 is the manager process and 5261 the
+actual daemon process\.
+.
+.IP "\(bu" 4
+\fB/var/log/V620\.log\fR:
+The daemon\'s log file\. Try tuning in to the ongoing logging using \fBtail \-f <logfile>\fR (replace <logfile> with the log file path\.
+.
+.IP "\(bu" 4
+\fB0:0:0:2\.903\fR:
+Uptime of the process\.
+.
+.IP "" 0
+.
+.SH "SEE ALSO"
+bitcoinjs\-run(1), bitcoinjs\-start(1), bitcoinjs\-stop(1), bitcoinjs\-restart(1)

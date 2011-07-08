@@ -19,6 +19,16 @@ node-bitcoin-p2p's daemon.
 * run:
   Run the BitcoinJS daemon in the foreground. See `bitcoinjs help
   run`.
+* start:
+  Start BitcoinJS as a daemon in the background. See `bitcoinjs help
+  start`.
+* stop:
+  Stop the BitcoinJs daemon. See `bitcoinjs help stop`.
+* restart:
+  Restart BitcoinJS daemon. See `bitcoinjs help restart`.
+* list:
+  List currently running instances of BitcoinJS. See `bitcoinjs help
+  list`.
 * db-reset
   Removes all tables from the database. See `bitcoinjs help db-reset`.
 * db-drop
