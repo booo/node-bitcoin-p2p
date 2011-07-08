@@ -1,0 +1,46 @@
+.\" Generated with Ronnjs/v0.1
+.\" http://github.com/kapouer/ronnjs/
+.
+.TH "BITCOINJS\-BCH\-EXPORT" "1" "July 2011" "" ""
+.
+.SH "NAME"
+\fBbitcoinjs-bch-export\fR \-\- export blockchain data
+.
+.SH "SYNOPSIS"
+.
+.nf
+bitcoinjs bch\-export
+.
+.fi
+.
+.SH "DESCRIPTION"
+Extracts the block chain as it\'s currently stored in the database and
+compresses the resulting bson files using bzip2\.
+.
+.P
+It will create three files:
+.
+.IP "\(bu" 4
+\fBblocks\.bson\.bz2\fR
+Contains the block headers\.
+.
+.IP "\(bu" 4
+\fBtransaction\.bson\.bz2\fR
+Contains the transactions\.
+.
+.IP "\(bu" 4
+\fBaccounts\.bson\.bz2\fR
+Contains the index of transactions by account\.
+.
+.IP "" 0
+.
+.P
+The data extracted this way can also be imported back into the
+database of course\. See \fBbitcoinjs help bch\-import\fR\|\.
+.
+.SH "SEE ALSO"
+.
+.IP "\(bu" 4
+bitcoinjs\-bch\-import(1)
+.
+.IP "" 0

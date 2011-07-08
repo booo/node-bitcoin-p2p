@@ -1,0 +1,46 @@
+.\" Generated with Ronnjs/v0.1
+.\" http://github.com/kapouer/ronnjs/
+.
+.TH "BITCOINJS\-BCH\-IMPORT" "1" "July 2011" "" ""
+.
+.SH "NAME"
+\fBbitcoinjs-bch-import\fR \-\- import blockchain data
+.
+.SH "SYNOPSIS"
+.
+.nf
+bitcoinjs bch\-import
+.
+.fi
+.
+.SH "DESCRIPTION"
+Imports block chain data from compressed bson dump files into the
+database\.
+.
+.P
+It will look for three files in the current working directory:
+.
+.IP "\(bu" 4
+\fBblocks\.bson\.bz2\fR
+Contains the block headers\.
+.
+.IP "\(bu" 4
+\fBtransaction\.bson\.bz2\fR
+Contains the transactions\.
+.
+.IP "\(bu" 4
+\fBaccounts\.bson\.bz2\fR
+Contains the index of transactions by account\.
+.
+.IP "" 0
+.
+.P
+The dump are created using the export utility\. See \fBbitcoinjs help
+bch\-export\fR\|\.
+.
+.SH "SEE ALSO"
+.
+.IP "\(bu" 4
+bitcoinjs\-bch\-export(1)
+.
+.IP "" 0

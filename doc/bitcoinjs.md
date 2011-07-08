@@ -25,6 +25,12 @@ node-bitcoin-p2p's daemon.
   Drops the database. This function is slightly slower than db-reset,
   because the allocated hard drive space is being freed up. See
   `bitcoinjs help db-drop`.
+* bch-import
+  Import the block chain from data files. See `bitcoinjs help
+  bch-import`.
+* bch-export
+  Export the block chain data from the database into a series of dump
+  files. See `bitcoinjs help bch-export`.
 * test:
   Executes the BitcoinJS unit tests, powered by VowsJS. By default the
   --spec format is used. Other available formats are XUnit, JSON and

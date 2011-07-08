@@ -3,6 +3,7 @@
 var fs = require('fs');
 var sys = require('sys');
 var path = require('path');
+var Step = require('step');
 var logger = require('../lib/logger');
 
 var args = process.argv.slice(2);
@@ -61,6 +62,119 @@ case "db-drop":
   require("../daemon/"+command);
   break;
 
+case "bch-export":
+  var dumpPath = path.resolve('dump');
+  path.exists(dumpPath, function (exists) {
+    if (exists) {
+      logger.error('Temporary directory "dump" exists. Aborting.');
+      process.exit(1);
+    }
+    function dumpCollection(collection, callback) {
+      Step(
+        function dumpDatabase() {
+          logger.info('Dumping '+collection);
+          sh("mongodump",
+             ["--db", "bitcoin",
+              "--collection", collection,
+              "--out", "dump"],
+             // Quiet
+             { customFds: [-1, -1, -1] },
+             // Callback
+             this
+            );
+        },
+        function compressDatabase(err) {
+          if (err) throw err;
+          logger.info('Compressing '+collection);
+          sh("bzip2", ["dump/bitcoin/"+collection+".bson"], this);
+        },
+        function getStat(err) {
+          if (err) throw err;
+          fs.stat("dump/bitcoin/"+collection+".bson.bz2", this);
+        },
+        function moveData(err, stat) {
+          if (err) throw err;
+          var sizeMB = Math.round(stat.size / 1024 / 102.4) / 10;
+          logger.info('Stored '+collection+'.bson.bz2 ('+sizeMB+'MB)');
+          sh("mv", ["dump/bitcoin/"+collection+".bson.bz2",
+                    collection+".bson.bz2"], this);
+        },
+        callback
+      );
+    };
+
+    Step(
+      function doDumps() {
+        dumpCollection("blocks", this.parallel());
+        dumpCollection("transactions", this.parallel());
+        dumpCollection("accounts", this.parallel());
+      },
+      function cleanup(err) {
+        if (err) {
+          logger.error(err.stack ? err.stack : err.toString());
+
+          // Note: No return, we still want to clean up, even if it failed.
+        }
+        sh("rm", ["-r", "dump"]);
+      }
+    );
+  });
+  break;
+
+case "bch-import":
+  function restoreCollection(collection, callback) {
+    Step(
+      function getStat() {
+        fs.stat(collection+".bson.bz2", this);
+      },
+      function extractDatabase(err, stat) {
+        if (err) {
+          if (err.errno == 2) {
+            // File not found, skip
+            logger.warn("Dump file "+collection+".bson.bz2 not found, skipping");
+            callback(null);
+            return;
+          }
+          throw err;
+        }
+        logger.info('Extracting '+collection);
+        sh("bunzip2", [collection+".bson.bz2", "--keep"], this);
+      },
+      function restoreDatabase(err) {
+        if (err) throw err;
+        logger.info('Importing '+collection);
+        sh("mongorestore",
+           ["--db", "bitcoin",
+            "--collection", collection,
+            "--drop",
+            "--indexesLast",
+            collection+".bson"],
+           // Quiet
+           { customFds: [-1, -1, -1] },
+           // Callback
+           this
+          );
+      },
+      callback
+    );
+  };
+  Step(
+    function doDumps() {
+      restoreCollection("blocks", this.parallel());
+      restoreCollection("transactions", this.parallel());
+      restoreCollection("accounts", this.parallel());
+    },
+    function finish(err) {
+      if (err) {
+        logger.error(err.stack ? err.stack : err.toString());
+        return;
+      }
+      sh("rm", ["blocks.bson", "transactions.bson", "accounts.bson"],
+         { customFds: [-1, -1, -1] });
+    }
+  );
+  break;
+
 case "test":
   var vowsBin = path.resolve(__dirname, "../node_modules/vows/bin/vows");
   var testDir = path.resolve(__dirname, "../test/");
@@ -111,11 +225,31 @@ default:
 }
 
 
-function sh(command, args) {
+function sh(command, args, opts, callback) {
+  if ("function" === typeof args) {
+    callback = args;
+    args = [];
+    opts = {};
+  }
+  if ("function" === typeof opts) {
+    callback = opts;
+    opts = {};
+  }
+  if ("object" !== typeof opts) {
+    opts = {};
+  }
+  if (!Array.isArray(args)) {
+    args = [];
+  }
   var stdio = process.binding("stdio");
   var fds = [ stdio.stdinFD || 0
             , stdio.stdoutFD || 1
             , stdio.stderrFD || 2 ];
-  var opts = { customFds : fds };
-  require('child_process').spawn(command, args, opts);
+
+  opts.customFds = opts.customFds || fds;
+
+  var proc = require('child_process').spawn(command, args, opts);
+  if ("function" === typeof callback) {
+    proc.on('exit', callback);
+  }
 };
