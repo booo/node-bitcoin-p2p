@@ -16,10 +16,18 @@ if (!command) {
 var usage = "usage: bitcoinjs <command> [<args>] ...\n" +
   "\n" +
   "The most commonly used commands are:\n" +
-  "  run      Run node-bitcoin-p2p daemon in foreground\n" +
-  "  test     Execute node-bitcoin-p2p's unit tests\n" +
+  "  run        Run node-bitcoin-p2p daemon in foreground\n" +
+  "  start      Run node-bitcoin-p2p as a managed daemon\n" +
+  "  stop       Stop node-bitcoin-p2p daemon\n" +
+  "  restart    Restart node-bitcoin-p2p daemon\n" +
+  "  list       List currently runnning daemon instances\n" +
+  "  db-reset   Reset the database\n" +
+  "  db-drop    Drop the database\n" +
+  "  bch-import Import block chain from dump\n" +
+  "  bch-export Dump block chain into files\n" +
+  "  test       Execute node-bitcoin-p2p's unit tests\n" +
   "\n" +
-  "Report bugs via https://github.com/bitcoinjs/node-bitcoin-p2p/issues\n";
+  "Or run 'bitcoinjs help help' for more information.\n";
 
 switch (command) {
 case "run":
