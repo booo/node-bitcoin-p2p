@@ -49,6 +49,10 @@ case "start":
 case "stop":
 case "list":
 case "restart":
+case "status":
+  if (command == "status") {
+    command = "list";
+  }
   args.push(path.resolve(__dirname, '../daemon/start.js'));
   args.unshift(command);
   sh("node_modules/forever/bin/forever", args);
