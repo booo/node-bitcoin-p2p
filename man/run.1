@@ -24,6 +24,13 @@ Path to config file\.
 Add a node to connect to\.
 .
 .IP "\(bu" 4
+\fB\-\-forcenode\fR:
+Force maintaining a connection to this node always\. This
+option acts independently from \fB\-\-connect\fR, meaning even if
+the node is in proxy mode (single connection) it will maintain
+connections to \fB\-\-forcenode\fR peers in addition\.
+.
+.IP "\(bu" 4
 \fB\-\-nolisten\fR:
 Disable incoming connections\.
 .

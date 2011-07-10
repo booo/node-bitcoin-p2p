@@ -11,7 +11,13 @@ bitcoinjs-run(1) -- run daemon in foreground
     Path to config file.
 
   * `--addnode`:
-    Add a node to connect to.
+    Add a node to the pool of known peers.
+
+  * `--forcenode`:
+    Force maintaining a connection to this node always. This
+    option acts independently from `--connect`, meaning even if
+    the node is in proxy mode (single connection) it will maintain
+    connections to `--forcenode` peers in addition.
 
   * `--nolisten`:
     Disable incoming connections.

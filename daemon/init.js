@@ -22,6 +22,10 @@ exports.createNode = function createNode(initConfig) {
       type: yanop.list,
       description: 'Add a node to connect to'
     },
+    forcenode: {
+      type: yanop.list,
+      description: 'Always maintain a connection to this node'
+    },
     connect: {
       type: yanop.string,
       description: 'Connect only to the specified node'
@@ -110,6 +114,9 @@ exports.createNode = function createNode(initConfig) {
   // Apply configuration from the command line
   if (opts.addnode.length) {
     cfg.network.initialPeers = cfg.network.initialPeers.concat(opts.addnode);
+  }
+  if (opts.forcenode.length) {
+    cfg.network.initialPeers = cfg.network.forcePeers.concat(opts.forcenode);
   }
   if (opts.connect) {
     cfg.network.connect = opts.connect;
