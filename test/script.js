@@ -1,11 +1,17 @@
 var vows = require('vows'),
     assert = require('assert');
 
+var logger = require("../lib/logger");
+
 var Script = require("../lib/script").Script;
 var ScriptInterpreter = require("../lib/scriptinterpreter").ScriptInterpreter;
+var Connection = require('../lib/connection').Connection;
 var Util = require("../lib/util");
+var Transaction = require('../lib/schema/transaction').Transaction;
 
-vows.describe('Script').addBatch({ "Stack correct after": {
+logger.logger.levels.scrdbg = 1;
+
+vows.describe('Script').addBatch({ "Stack after": {
   'OP_1NEGATE & OP_16':
   stackTest([OP_1NEGATE, OP_16], [-1, 16]),
 
@@ -215,9 +221,17 @@ vows.describe('Script').addBatch({ "Stack correct after": {
 
   'OP_HASH256':
   stackTest(['426974636f696e4a5321', OP_HASH256],
-            ['12a8c4ebf9fe29890dc3627fe4bf73e13eb28b394d900ce2e75c19e03a630ad4'])
+            ['12a8c4ebf9fe29890dc3627fe4bf73e13eb28b394d900ce2e75c19e03a630ad4']),
 
+  'OP_CHECKSIG':
+  // Tx d86f99eeb70b45ba08632cd14eb8765b6b95d863857e30d5c16d0e0868462499
+  // from testnet, block 30000
+  checksigTest("01000000014bd1838beb7b7d1b68d3347fca42b81ca0728fc16a8c7b604989aa0a5fde983c000000008a4730440220168833f25d742e7126bdd8f6b5d7753388ef8f35f450ee21fc0bc8af8a83cd5402201fbb9c820786e96c4b00d17abc2678f732e0d06d676c35271c2317486280af25014104d853001cd8ab4bacf57319be8b138a7b712dd00500d34e005bec0d0933fdd2a23de4fe65876d2744ed7e7b30ac205e389e238325e405e4b2d995187d15b43fedffffffff0280792f77000000001976a9146a72d5d8e2b77ddd3f0641c8539bb86d5344378088ac002f6859000000001976a91406eb2190b488a5ed02e0423f63b99c23bc163da188ac00000000", [OP_DUP, OP_HASH160, "08bb96496ef8690604a8c186bd7f3190c42d9f65", OP_EQUALVERIFY, OP_CHECKSIG]),
 
+  'OP_CHECKSIG_2':
+  // Tx f4184fc596403b9d638783cf57adfe4c75c605f6356fbc91338530e9831e9e16
+  // from mainnet, block 170
+  checksigTest("0100000001c997a5e56e104102fa209c6a852dd90660a20b2d9c352423edce25857fcd3704000000004847304402204e45e16932b8af514961a1d3a1a25fdf3f4f7732e9d624c6c61548ab5fb8cd410220181522ec8eca07de4860a4acdd12909d831cc56cbbac4622082221a8768d1d0901ffffffff0200ca9a3b00000000434104ae1a62fe09c5f51b13905f07f06b99a2f7159b2225f374cd378d71302fa28414e7aab37397f554a7df5f142c21c1b7303b8a0626f1baded5c72a704f7e6cd84cac00286bee0000000043410411db93e1dcdb8a016b49840f8c53bc1eb68a382e97b1482ecad7b148a6909a5cb2e0eaddfb84ccf9744464f82e160bfa9b8b64f9d4c03f999b8643f656b412a3ac00000000", ["0411db93e1dcdb8a016b49840f8c53bc1eb68a382e97b1482ecad7b148a6909a5cb2e0eaddfb84ccf9744464f82e160bfa9b8b64f9d4c03f999b8643f656b412a3", OP_CHECKSIG])
 }}).export(module);
 
 /**
@@ -232,17 +246,23 @@ function stackTest(script, stack) {
 };
 
 function run(scriptChunks) {
-  scriptChunks = scriptChunks.map(function (chunk) {
-    if ("string" === typeof chunk) {
-      return Util.decodeHex(chunk);
-    } else {
-      return chunk;
-    }
-  });
-  var script = new Script();
-  script.chunks = scriptChunks;
+  var script = Script.fromTestData(scriptChunks);
   var interpreter = new ScriptInterpreter();
   interpreter.disableUnsafeOpcodes = false;
   interpreter.eval(script);
   return interpreter;
+};
+
+function checksigTest(txData, scriptPubKeyData) {
+  return function () {
+    var txInfo = Connection.parseTx(Util.decodeHex(txData));
+    var tx = new Transaction(txInfo);
+    var scriptSig = new Script(tx.ins[0].script);
+    var scriptPubKey = Script.fromTestData(scriptPubKeyData);
+    var si = new ScriptInterpreter();
+    si.eval(scriptSig, tx, 0, 1);
+    si.eval(scriptPubKey, tx, 0, 1);
+    assert.deepEqual(si.getPrimitiveStack(),
+                     [1]);
+  };
 };
