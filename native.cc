@@ -409,6 +409,9 @@ sha256_midstate (const Arguments& args)
 
   Buffer *midstate_buf = Buffer::New(SHA256_DIGEST_LENGTH);
   memcpy(Buffer::Data(midstate_buf), &c.h, SHA256_DIGEST_LENGTH);
+
+  free(blk_data);
+
   return scope.Close(midstate_buf->handle_);
 }
 
