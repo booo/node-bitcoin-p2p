@@ -6,7 +6,7 @@ var cfg = new (require('../lib/settings').Settings)();
 // To activate the JSON-RPC API, you have to at least set this option to true
 // and choose an RPC password below. Please make sure you select a secure
 // password.
-cfg.jsonrpc.enabled = false;
+cfg.jsonrpc.enable = false;
 
 // JSON-RPC login
 //
