@@ -33,7 +33,7 @@
     "winston": ">=0.2.6",
     "irc": ">=0.1.2",
     "webworker": "*",
-    "jsonrpc2": ">=0.0.5",
+    "jsonrpc2": ">=0.0.6",
     "yanop": ">=0.1.1",
     "forever": ">=0.5.6",
     "mongoose": ">=1.7.3"

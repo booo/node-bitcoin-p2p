@@ -66,6 +66,12 @@ case "status":
   sh("node_modules/forever/bin/forever", args);
   break;
 
+case "rpc":
+  // Simulate call to rpccli.js
+  process.argv.splice(1, 2, path.resolve(__dirname, '../daemon/start.js'));
+  require("../daemon/rpccli");
+  break;
+
 case "db-reset":
 case "db-drop":
   // This modifies the argv array such that we simulate calling the start

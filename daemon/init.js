@@ -6,7 +6,7 @@ var yanop = require('yanop');
 var Bitcoin = require('../lib/bitcoin');
 var logger = require('../lib/logger');
 
-exports.createNode = function createNode(initConfig) {
+var getConfig = exports.getConfig = function getConfig(initConfig) {
   if ("object" !== typeof initConfig) {
     initConfig = {};
   }
@@ -84,9 +84,10 @@ exports.createNode = function createNode(initConfig) {
 
   // Load user-defined settings
   logger.info('Loading configuration');
+  var cfg;
   try {
     var configPath = opts.config ? path.resolve(opts.config) : './settings';
-    var cfg = require(configPath);
+    cfg = require(configPath);
   } catch (e) {
     if (/^Cannot find module /.test(e.message)) {
       logger.warn('No configuration file found!');
@@ -166,6 +167,11 @@ exports.createNode = function createNode(initConfig) {
     logger.logger.levels.scrdbg = 1;
   }
 
+  return cfg;
+};
+
+var createNode = exports.createNode = function createNode(initConfig) {
+  var cfg = getConfig(initConfig);
   // Return node object
   return new Bitcoin.Node(cfg);
 };
