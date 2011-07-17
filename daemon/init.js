@@ -120,6 +120,9 @@ var getConfig = exports.getConfig = function getConfig(initConfig) {
     cfg.network.initialPeers = cfg.network.forcePeers.concat(opts.forcenode);
   }
   if (opts.connect) {
+    if (opts.connect.indexOf(',') != -1) {
+      opts.connect = opts.connect.split(',');
+    }
     cfg.network.connect = opts.connect;
   }
   if (opts.nolisten) {

@@ -10,14 +10,31 @@ bitcoinjs-run(1) -- run daemon in foreground
   * `-c` <file>, `--config`=<file>:
     Path to config file.
 
+  * `--connect`=<setting>:
+    Changes the network connection mode for this node.
+
+    Valid values are:
+
+    _localhost:8333_:
+    Connect to a single node (and allow no other connections). You can
+    also enter multiple hosts, separated by commas.
+
+    _p2p_:
+    Use bootstrapping to connect to the open peer-to-peer network.
+
+    _auto_:
+    Check if localhost:8333 is available and if so, disable
+    bootstrapping and use localhost as the only connection. Otherwise
+    use p2p mode. (default)
+
   * `--addnode`:
     Add a node to the pool of known peers.
 
   * `--forcenode`:
     Force maintaining a connection to this node always. This
-    option acts independently from `--connect`, meaning even if
-    the node is in proxy mode (single connection) it will maintain
-    connections to `--forcenode` peers in addition.
+    option override any settings from --connect, meaning even if
+    the node is in single connection mode it will maintain connections
+    to --forcenode peers in addition.
 
   * `--nolisten`:
     Disable incoming connections.

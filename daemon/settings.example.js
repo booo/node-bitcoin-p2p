@@ -34,7 +34,9 @@ cfg.jsonrpc.port = 8432;
 //   ["server:8333", ...] - Connect to multiple nodes
 //   "auto"               - Connect to localhost:8333 if available and
 //                          disable bootstrapping and other known nodes.
-//   null                 - Use bootstrapping (see below)
+//   "p2p"
+//   - or -
+//   null                 - Use bootstrapping
 cfg.network.connect = "auto";
 
 module.exports = cfg;

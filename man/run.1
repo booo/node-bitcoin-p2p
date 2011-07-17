@@ -20,15 +20,37 @@ bitcoinjs run [\-\-testnet | \-\-livenet] [<args>]
 Path to config file\.
 .
 .IP "\(bu" 4
+\fB\-\-connect\fR=<setting>:
+Changes the network connection mode for this node\.
+.
+.IP
+Valid values are:
+.
+.IP
+\fIlocalhost:8333\fR:
+Connect to a single node (and allow no other connections)\. You can
+also enter multiple hosts, separated by commas\.
+.
+.IP
+\fIp2p\fR:
+Use bootstrapping to connect to the open peer\-to\-peer network
+.
+.IP
+\fIauto\fR:
+Check if localhost:8333 is available and if so, disable
+bootstrapping and use localhost as the only
+connection\. Otherwise use p2p mode\. (default)
+.
+.IP "\(bu" 4
 \fB\-\-addnode\fR:
-Add a node to connect to\.
+Add a node to the pool of known peers\.
 .
 .IP "\(bu" 4
 \fB\-\-forcenode\fR:
 Force maintaining a connection to this node always\. This
-option acts independently from \fB\-\-connect\fR, meaning even if
-the node is in proxy mode (single connection) it will maintain
-connections to \fB\-\-forcenode\fR peers in addition\.
+option override any settings from \-\-connect, meaning even if
+the node is in single connection mode it will maintain connections
+to \-\-forcenode peers in addition\.
 .
 .IP "\(bu" 4
 \fB\-\-nolisten\fR:
