@@ -125,7 +125,6 @@ case "bch-export":
       function doDumps() {
         dumpCollection("blocks", this.parallel());
         dumpCollection("transactions", this.parallel());
-        dumpCollection("accounts", this.parallel());
       },
       function cleanup(err) {
         if (err) {
@@ -180,7 +179,6 @@ case "bch-import":
     function doDumps() {
       restoreCollection("blocks", this.parallel());
       restoreCollection("transactions", this.parallel());
-      restoreCollection("accounts", this.parallel());
     },
     function finish(err) {
       if (err) {
