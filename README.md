@@ -19,8 +19,11 @@ instructions](https://github.com/bitcoinjs/node-bitcoin-p2p/wiki/Installation).
 
 * [Node.js](https://github.com/joyent/node) 0.4.8+
 * [NPM](https://github.com/isaacs/npm) 1.0+
-* [MongoDB](http://www.mongodb.org/)
+* [MongoDB](http://www.mongodb.org/) 1.6.x+
+  **Note:** Due to the database size, you need to be using the 64-bit
+  build of MongoDB.
 * [libgmp](http://gmplib.org/) (lib and headers)
+
 
 ## Installation
 
