@@ -2,6 +2,7 @@ var vows = require('vows'),
     assert = require('assert');
 
 var Binary = require('binary');
+var bigint = require('bigint');
 
 var Util = require('../lib/util');
 var logger = require('../lib/logger');
@@ -30,6 +31,18 @@ vows.describe('Bitcoin Utils').addBatch({
       assert.equal(target.toHex(),
                    "00000000000404cb0000000000000000" +
                    "00000000000000000000000000000000");
+    },
+    'are correctly represented in a buffer': function (topic) {
+      var decoded = Util.decodeDiffBits(topic);
+      var decodedInt = Util.decodeDiffBits(topic, true);
+      assert.equal(bigint.fromBuffer(decoded).toString(16),
+                   decodedInt.toString(16));
+    },
+    'can be re-encoded': function (topic) {
+      var decoded = Util.decodeDiffBits(topic);
+      var reencoded = Util.encodeDiffBits(decoded);
+      assert.equal(reencoded,
+                   topic);
     }
   },
 
