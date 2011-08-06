@@ -36,7 +36,7 @@
     "jsonrpc2": ">=0.0.6",
     "yanop": ">=0.1.1",
     "forever": ">=0.6.1",
-    "mongoose": ">=1.7.3"
+    "bitcoinjs-mongoose": ">=1.8.0"
   },
 
   "devDependencies": {
