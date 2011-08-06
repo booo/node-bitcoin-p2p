@@ -58,7 +58,32 @@ vows.describe('Block Chain').addBatch({
     }
   }
 }).addBatch({
-  'A chain after a split': {
+  'A chain downloaded in the wrong order': {
+    topic: makeTestChain({
+      blocks: [
+        // O -> A -> B -> C -> D -> E -> F
+        // (added in order O, A, D, B, C, E, B (dup), F)
+        ['O', 'A'],
+        ['C', 'D'],
+        ['A', 'B'],
+        ['B', 'C'],
+        ['D', 'E'],
+        ['A', 'B'],
+        ['E', 'F']
+      ]
+    }),
+
+    'has a height of six': function (topic) {
+      assert.equal(topic.chain.getTopBlock().height, 6);
+    },
+
+    'has F as the top block': function (topic) {
+      assert.equal(encodeHex(topic.chain.getTopBlock().getHash()),
+                   encodeHex(topic.blocks.F.getHash()));
+    }
+  }
+}).addBatch({
+  'A chain after just a split': {
     topic: makeTestChain({
       blocks: [
         // O -> A -> B -> C
@@ -133,35 +158,85 @@ vows.describe('Block Chain').addBatch({
 
 function makeTestChain(descriptor) {
   var blocks = {};
+  var blockTxs = {};
   var events = [];
+
+  var callback = this.callback;
 
   descriptor = descriptor || {};
 
   function makeBlock(blockDesc) {
-    // Translate shorthand into normal block descriptor
-    if (Array.isArray(blockDesc)) {
-      blockDesc = {
-        parent: blockDesc[0],
-        name: blockDesc[1]
-      };
-    }
-
     return function (err, chain) {
       if (err) throw err;
 
-      blocks[blockDesc.name] = createBlock(blocks[blockDesc.parent], chain, this);
+      createBlock(blocks[blockDesc.parent], chain, this);
+    };
+  };
+
+
+  function indexBlock(blockDesc) {
+    return function (err, chain, block, txs) {
+      blocks[blockDesc.name] = block;
+      blockTxs[blockDesc.name] = txs;
+      this(null, chain);
     };
   };
 
   return function () {
     var steps = [];
 
+    // Create the chain where we will *generate* the blocks on
     steps.push(makeEmptyTestChain);
-    steps.push(function setupTest(err, chain) {
+    steps.push(function setupGen(err, chain) {
       if (err) throw err;
 
       // Index genesis block
       blocks['O'] = chain.getTopBlock();
+
+      this(null, chain);
+    });
+    if (Array.isArray(descriptor.blocks)) {
+      // Translate shorthand into normal block descriptor
+      descriptor.blocks = descriptor.blocks.map(function (blockDesc) {
+        if (Array.isArray(blockDesc)) {
+          blockDesc = {
+            parent: blockDesc[0],
+            name: blockDesc[1]
+          };
+        }
+        return blockDesc;
+      });
+
+      var blockIndex = {O: true};
+      var toProcess = descriptor.blocks.slice();
+      while (toProcess.length) {
+        var blockDesc = toProcess.shift();
+
+        // Blocks can appear in the wrong order in the test description, but
+        // we need to generate them in the right order.
+        if (!blockIndex[blockDesc.parent]) {
+          // TODO: This can cause an infinite loop if the test description is
+          //       invalid.
+          toProcess.push(blockDesc);
+          continue;
+        }
+
+        // The test description can contain duplicates, in that case only
+        // generate the block the first time.
+        if (blockIndex[blockDesc.name]) {
+          continue;
+        }
+
+        steps.push(makeBlock(blockDesc));
+        steps.push(indexBlock(blockDesc));
+        blockIndex[blockDesc.name] = true;
+      }
+    }
+
+    // Create another chain where we will simulate a *download* of these blocks
+    steps.push(makeEmptyTestChain);
+    steps.push(function setupTest(err, chain) {
+      if (err) throw err;
 
       // Monkey-patch a mechanism onto the block chain captures all events.
       chain.__emit = chain.emit;
@@ -174,9 +249,26 @@ function makeTestChain(descriptor) {
       this(null, chain);
     });
 
+    // Simulate block download
     if (Array.isArray(descriptor.blocks)) {
       descriptor.blocks.forEach(function (blockDesc) {
-        steps.push(makeBlock(blockDesc));
+        steps.push(function simulateDownload(err, chain) {
+          if (err) throw err;
+
+          if (!blocks[blockDesc.name]) {
+            throw new Error("Test block "+blockDesc.name+" was not " +
+                            "generated successfully.");
+          }
+
+          var callback = this.parallel();
+          chain.add(
+            blocks[blockDesc.name],
+            blockTxs[blockDesc.name],
+            function (err) {
+              callback(null, chain);
+            }
+          );
+        });
       });
     }
 
@@ -189,7 +281,7 @@ function makeTestChain(descriptor) {
       topic.blocks = blocks;
       topic.events = events;
 
-      return topic;
+      this(null, topic);
     });
 
     steps.push(this.callback);
@@ -198,7 +290,9 @@ function makeTestChain(descriptor) {
   };
 };
 
-function makeEmptyTestChain() {
+function makeEmptyTestChain(err) {
+  if (err) throw err;
+
   var callback = this;
 
   var settings = new Settings();
@@ -242,8 +336,8 @@ function createBlock(block, chain, callback) {
         return;
       }
 
-      chain.add(newBlock, txs, function (err, result) {
-        callback(err, chain);
+      chain.add(newBlock, txs, function (err) {
+        callback(err, chain, newBlock, txs);
       });
     }
   );
