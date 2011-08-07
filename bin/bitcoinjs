@@ -68,7 +68,7 @@ case "status":
 
 case "rpc":
   // Simulate call to rpccli.js
-  process.argv.splice(1, 2, path.resolve(__dirname, '../daemon/start.js'));
+  process.argv.splice(1, 2, path.resolve(__dirname, '../daemon/rpccli.js'));
   require("../daemon/rpccli");
   break;
 
@@ -189,6 +189,13 @@ case "bch-import":
          { customFds: [-1, -1, -1] });
     }
   );
+  break;
+
+case "verify":
+  // Simulate call to verify.js
+  process.argv.splice(1, 2, path.resolve(__dirname, '../daemon/verify.js'));
+  require("../daemon/verify");
+  break;
   break;
 
 case "test":

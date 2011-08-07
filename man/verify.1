@@ -1,0 +1,45 @@
+.\" Generated with Ronnjs/v0.1
+.\" http://github.com/kapouer/ronnjs/
+.
+.TH "BITCOINJS\-VERIFY" "1" "August 2011" "" ""
+.
+.SH "NAME"
+\fBbitcoinjs-verify\fR \-\- validate block chain
+.
+.SH "SYNOPSIS"
+.
+.nf
+bitcoinjs verify [\-\-config=<path>]
+.
+.fi
+.
+.SH "OPTIONS"
+.
+.IP "\(bu" 4
+\fB\-c\fR <file>, \fB\-\-config\fR=<file>:
+Path to config file\.
+.
+.IP "\(bu" 4
+\fB\-h\fR, \fB\-\-help\fR:
+Inline command help\.
+.
+.IP "" 0
+.
+.SH "DESCRIPTION"
+This tool allows you to verify the block chain in its current state in
+the database\. It will check whether your top block has the correct
+hash according to a set of web\-based services (such as Block
+Explorer)\.
+.
+.P
+Once the top hash has been confirmed, the validation tool will verify
+all hashes (blocks and transactions) in your database, effectively
+proving that your block chain is 100% accurate up to your current top
+block\.
+.
+.P
+Note that the verify tool does not require your block chain to be
+up\-to\-date\. You can verify the chain at any time and the validation
+tool only checks that your chain is valid up to that point\. Once you
+connect to the peer\-to\-peer network, BitcoinJS will automatically
+request a download of the remaining blocks\.
