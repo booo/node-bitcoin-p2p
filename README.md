@@ -54,6 +54,17 @@ bitcoinjs help
 ```
 
 
+## Uninstall
+
+``` sh
+# Remove the database
+bitcoinjs db-drop
+
+# Uninstall the software
+sudo npm uninstall bitcoin-p2p -g
+```
+
+
 ## Logging
 
 `node-bitcoin-p2p` logs using the winston library. Currently, it
@@ -70,7 +81,7 @@ are the available log levels:
 - `error` - Something bad happened
 
 The XXXdbg levels can be enabled individually by editing
-lib/logger.js.
+lib/logger.js or via the command line, e.g. `bitcoinjs run --bchdbg`.
 
 
 ## Advanced usage
@@ -115,7 +126,6 @@ currently lacks:
 
 - Verify difficulty transitions
 - Accept incoming Bitcoin connections (optionally)
-- Store hashes etc. as MongoDB BinData instead of base64
 
 On top of that, it could use a lot more documentation, test
 cases and general bug fixing across the board.
