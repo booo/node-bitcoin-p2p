@@ -25,6 +25,7 @@ var usage = "usage: bitcoinjs <command> [<args>] ...\n" +
   "  db-drop    Drop the database\n" +
   "  bch-import Import block chain from dump\n" +
   "  bch-export Dump block chain into files\n" +
+  "  verify     Statically check the block chain data\n" +
   "  test       Execute node-bitcoin-p2p's unit tests\n" +
   "\n" +
   "Or run 'bitcoinjs help help' for more information.\n";
@@ -38,7 +39,7 @@ case "run":
   break;
 
 case "start":
-  var sep = args.indexOf('--')
+  var sep = args.indexOf('--');
   if (sep != -1) {
     // If there is a "--" argument, we'll insert the script name there. That
     // will cause all prior arguments to be interpreted by forever and all
@@ -202,7 +203,7 @@ case "test":
   var vowsBin = path.resolve(__dirname, "../node_modules/vows/bin/vows");
   var testDir = path.resolve(__dirname, "../test/");
   var testCases = fs.readdirSync(testDir);
-  testCases = testCases.map(function (p) { return "test/" + p });
+  testCases = testCases.map(function (p) { return "test/" + p; });
   args.unshift('--spec');
   sh("node_modules/vows/bin/vows", testCases.concat(args));
   break;
