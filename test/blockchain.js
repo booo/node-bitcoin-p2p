@@ -154,6 +154,39 @@ vows.describe('Block Chain').addBatch({
       }
     }
   }
+}).addBatch({
+  'A chain after a duplicate download': {
+    topic: makeTestChain({
+      blocks: [
+        // O -> A -> B -> C -> D -> E -> F -> G -> H
+        ['O', 'A'],
+        ['A', 'B'],
+        ['A', 'B'],
+        ['B', 'C'],
+        ['B', 'C'],
+        ['C', 'D'],
+        ['C', 'D'],
+        ['C', 'D'],
+        ['E', 'F'],
+        ['D', 'E'],
+        ['D', 'E'],
+        ['E', 'F'],
+        ['F', 'G'],
+        ['F', 'G'],
+        ['G', 'H'],
+        ['G', 'H']
+      ]
+    }),
+
+    'has a height of eight': function (topic) {
+      assert.equal(topic.chain.getTopBlock().height, 8);
+    },
+
+    'has H as the top block': function (topic) {
+      assert.equal(encodeHex(topic.chain.getTopBlock().getHash()),
+                   encodeHex(topic.blocks.H.getHash()));
+    }
+  }
 }).export(module);
 
 function makeTestChain(descriptor) {
@@ -261,6 +294,7 @@ function makeTestChain(descriptor) {
           }
 
           var callback = this.parallel();
+          console.log(blockDesc.name);
           chain.add(
             blocks[blockDesc.name],
             blockTxs[blockDesc.name],
