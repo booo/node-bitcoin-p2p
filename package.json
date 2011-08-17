@@ -1,6 +1,6 @@
 {
   "name": "bitcoin-p2p",
-  "version": "0.0.8",
+  "version": "0.0.9",
   "description": "Implementation of Bitcoin's peer-to-peer layer for Node.js",
   "main": "./lib/bitcoin",
   "keywords": [
