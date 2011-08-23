@@ -102,7 +102,7 @@ When upgrading node-bitcoin-p2p it is a good idea to reset its
 database:
 
 ``` sh
-mongo bitcoin --eval "db.dropDatabase()"
+bitcoinjs db-drop
 ```
 
 This won't be necessary once node-bitcoin-p2p is more stable, but for
