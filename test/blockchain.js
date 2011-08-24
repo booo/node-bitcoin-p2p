@@ -294,7 +294,7 @@ function makeTestChain(descriptor) {
           }
 
           var callback = this.parallel();
-          console.log(blockDesc.name);
+
           chain.add(
             blocks[blockDesc.name],
             blockTxs[blockDesc.name],
