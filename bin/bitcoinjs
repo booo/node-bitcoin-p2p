@@ -52,7 +52,7 @@ case "start":
   }
   // Finally, we'll add the start action to the beginning
   args.unshift("start");
-  sh("forever", args);
+  sh(__dirname + "/../node_modules/forever/bin/forever", args);
   break;
 
 case "stop":
@@ -64,7 +64,7 @@ case "status":
   }
   args.push(path.resolve(__dirname, '../daemon/start.js'));
   args.unshift(command);
-  sh("node_modules/forever/bin/forever", args);
+  sh(__dirname + "/../node_modules/forever/bin/forever", args);
   break;
 
 case "rpc":
@@ -203,9 +203,9 @@ case "test":
   var vowsBin = path.resolve(__dirname, "../node_modules/vows/bin/vows");
   var testDir = path.resolve(__dirname, "../test/");
   var testCases = fs.readdirSync(testDir);
-  testCases = testCases.map(function (p) { return "test/" + p; });
+  testCases = testCases.map(function (p) { return testDir + "/" + p; });
   args.unshift('--spec');
-  sh("node_modules/vows/bin/vows", testCases.concat(args));
+  sh(vowsBin, testCases.concat(args));
   break;
 
 case "make-man":
