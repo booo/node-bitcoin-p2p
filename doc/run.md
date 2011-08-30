@@ -22,6 +22,9 @@ bitcoinjs-run(1) -- run daemon in foreground
     _p2p_:
     Use bootstrapping to connect to the open peer-to-peer network.
 
+    _none_:
+    Don't connect to anybody.
+
     _auto_:
     Check if localhost:8333 is available and if so, disable
     bootstrapping and use localhost as the only connection. Otherwise
