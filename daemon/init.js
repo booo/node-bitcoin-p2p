@@ -94,7 +94,7 @@ var getConfig = exports.getConfig = function getConfig(initConfig) {
       sys.puts(
         "\n" +
           "BitcoinJS was unable to locate your config file under:\n" +
-          "" + path.resolve(__dirname, configPath) + "\n" +
+          "" + path.resolve(__dirname, configPath) + ".js\n" +
           "\n" +
           "If you just installed node-bitcoin-p2p, this is normal.\n" +
           "You'll find an example config file here:\n" +
