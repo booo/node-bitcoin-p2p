@@ -1,2 +1,5 @@
 build-cc
 daemon/settings.js
+.git
+.lock-wscript
+.DS_Store
