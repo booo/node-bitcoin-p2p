@@ -12,30 +12,43 @@ access to the data in the block chain (in real-time.)
 
 # Installation
 
-Please refer to the wiki for detailed [installation
-instructions](https://github.com/bitcoinjs/node-bitcoin-p2p/wiki/Installation).
 
 ## Prerequisites
 
 * [Node.js](https://github.com/joyent/node) 0.4.8+
 * [NPM](https://github.com/isaacs/npm) 1.0+
-* [MongoDB](http://www.mongodb.org/) 1.6.x+
+* [MongoDB](http://www.mongodb.org/) 1.6+
   **Note:** Due to the database size, you need to be using the 64-bit
   build of MongoDB.
+* [OpenSSL](http://www.openssl.org/) (lib and headers)
 * [libgmp](http://gmplib.org/) (lib and headers)
+* [pkg-config](http://www.freedesktop.org/wiki/Software/pkg-config)
 
+Node.js and NPM should be compiled manually based on the latest stable
+release. MongoDB can be installed using any method. The remaining
+dependencies can be installed as follows (on Debian/Ubuntu):
+
+``` sh
+sudo apt-get install libssl-dev libgmp3-dev pkg-config
+```
 
 ## Installation
 
-This one-liner will install the latest version straight from NPM:
+Once you have all prerequisites, this one-liner will install the
+latest version straight from NPM:
 
 ``` sh
 # Install node-bitcoin-p2p globally
 sudo npm install bitcoin-p2p -g
 ```
 
+Please refer to the wiki for detailed [installation
+instructions](https://github.com/bitcoinjs/node-bitcoin-p2p/wiki/Installation).
+
 If you run into problems, please take a look at the "Troubleshooting"
-section below or go to the Issues tab to open a new ticket.
+section below or go to
+[Issues](https://github.com/bitcoinjs/node-bitcoin-p2p/issues) to open
+a new ticket.
 
 # Usage
 
@@ -43,7 +56,7 @@ For your first experience with the BitcoinJS daemon, try running it
 right from the terminal.
 
 ``` sh
-bitcoinjs run --testnet
+bitcoinjs run --testnet --bchdbg
 ```
 
 You can find out more about the various functions of the command line
@@ -125,7 +138,8 @@ The library is currently alpha quality. Here are some things it
 currently lacks:
 
 - Verify difficulty transitions
-- Accept incoming Bitcoin connections (optionally)
+- Verify transactions in blocks
+- Respond to getblocks requests
 
 On top of that, it could use a lot more documentation, test
 cases and general bug fixing across the board.
