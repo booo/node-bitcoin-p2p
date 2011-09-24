@@ -12,8 +12,7 @@ def configure(conf):
   conf.check_tool('compiler_cxx')
   conf.check_tool('node_addon')
 
-  if not conf.check_cfg(atleast_pkgconfig_version='0.0.0'):
-    conf.fatal("Couldn't find pkg-config tool")
+  conf.check_cfg(atleast_pkgconfig_version='0.0.0', mandatory=True, errmsg='Couldn\'t find pkg-config tool')
 
   if conf.check_cfg(package='openssl',
                     args='--cflags --libs',
