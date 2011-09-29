@@ -1,4 +1,4 @@
-build-cc
+build-cc/
 daemon/settings.js
 .git
 .lock-wscript
