@@ -1,4 +1,5 @@
 .lock-wscript
 build-cc
+native.node
 node_modules
 daemon/settings.js

@@ -1,4 +1,4 @@
-import Options
+import Options, os
 
 srcdir = '.'
 blddir = 'build-cc'
@@ -34,8 +34,13 @@ def configure(conf):
     else:
       conf.fatal("Couldn't find OpenSSL!")
 
+def build_post(bld):
+  module_path = bld.path.find_resource('native.node').abspath(bld.env)
+  os.system('cp %r native.node' % module_path)
+
 def build(bld):
   obj = bld.new_task_gen('cxx', 'shlib', 'node_addon')
   obj.target = 'native'
   obj.source = 'native.cc'
+  bld.add_post_fun(build_post)
 

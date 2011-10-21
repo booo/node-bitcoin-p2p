@@ -2,4 +2,5 @@ build-cc/
 daemon/settings.js
 .git
 .lock-wscript
+native.node
 .DS_Store
