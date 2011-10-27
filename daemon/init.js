@@ -105,10 +105,7 @@ var getConfig = exports.getConfig = function getConfig(initConfig) {
   }
 
   if (!(cfg instanceof Bitcoin.Settings)) {
-    logger.error('Settings file is invalid!\n');
-    sys.puts("Please see\n" + 
-             path.resolve(__dirname, './settings.example.js') + "\n" +
-             "for an example config file.\n");
+    logger.error('Invalid configuration or none available!\n');
     process.exit(1);
   }
 
