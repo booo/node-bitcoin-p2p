@@ -23,6 +23,15 @@ cfg.jsonrpc.port = 8432;
 
 // NETWORK SECTION
 // -----------------------------------------------------------------------------
+// Network type
+//
+// BitcoinJS supports different pre-installed configuration and defaults to
+// the original 2009 Satoshi block chain.
+//
+// Other supported configurations are (uncomment to activate):
+//
+//cfg.setTestnetDefaults();
+
 // Connect
 //
 // We default to connect=auto mode. This means that we'll try to connect to
@@ -38,5 +47,33 @@ cfg.jsonrpc.port = 8432;
 //   - or -
 //   null                 - Use bootstrapping
 cfg.network.connect = "auto";
+
+// Default port
+//
+// This is the port where BitcoinJS will listen for incoming Bitcoin
+// connections. It is also used as the default port for hosts where no port
+// is specified.
+//
+// The default depends on the network type (8333 for livenet, 18333 for testnet)
+//cfg.network.port = 8333;
+
+// No incoming connections
+//
+// Set this value to true if you want to prevent BitcoinJS from accepting any
+// inbound Bitcoin connections.
+cfg.network.noListen = false;
+
+// DATABASE SECTION
+// -----------------------------------------------------------------------------
+// URI
+//
+// This is the MongoDB URI that BitcoinJS will use as its database. For more
+// information, see: http://www.mongodb.org/display/DOCS/Connections
+cfg.storage.uri = "mongodb://localhost/bitcoin";
+
+// OTHER SETTINGS
+// -----------------------------------------------------------------------------
+// For other (undocumented) settings, please see the lib/settings.js file in the
+// source code.
 
 module.exports = cfg;
