@@ -209,6 +209,8 @@ function makeTestChain(descriptor) {
 
   function indexBlock(blockDesc) {
     return function (err, chain, block, txs) {
+      if (err) throw err;
+
       blocks[blockDesc.name] = block;
       blockTxs[blockDesc.name] = txs;
       this(null, chain);
