@@ -32,6 +32,43 @@ static Handle<Value> VException(const char *msg) {
     return ThrowException(Exception::Error(String::New(msg)));
 }
 
+
+int static inline EC_KEY_regenerate_key(EC_KEY *eckey, const BIGNUM *priv_key)
+{
+  int ok = 0;
+  BN_CTX *ctx = NULL;
+  EC_POINT *pub_key = NULL;
+
+  if (!eckey) return 0;
+
+  const EC_GROUP *group = EC_KEY_get0_group(eckey);
+
+  if ((ctx = BN_CTX_new()) == NULL)
+    goto err;
+
+  pub_key = EC_POINT_new(group);
+
+  if (pub_key == NULL)
+    goto err;
+
+  if (!EC_POINT_mul(group, pub_key, priv_key, NULL, NULL, ctx))
+    goto err;
+
+  EC_KEY_set_private_key(eckey,priv_key);
+  EC_KEY_set_public_key(eckey,pub_key);
+
+  ok = 1;
+
+ err:
+
+  if (pub_key)
+    EC_POINT_free(pub_key);
+  if (ctx != NULL)
+    BN_CTX_free(ctx);
+
+  return(ok);
+}
+
 class BitcoinKey : ObjectWrap
 {
 private:
@@ -111,6 +148,7 @@ public:
     // Methods
     NODE_SET_PROTOTYPE_METHOD(s_ct, "verifySignature", VerifySignature);
     NODE_SET_PROTOTYPE_METHOD(s_ct, "verifySignatureSync", VerifySignatureSync);
+    NODE_SET_PROTOTYPE_METHOD(s_ct, "regenerateSync", RegenerateSync);
     NODE_SET_PROTOTYPE_METHOD(s_ct, "toDER", ToDER);
 
     // Static methods
@@ -222,10 +260,9 @@ public:
     Handle<Object> buffer = value->ToObject();
     const unsigned char *data = (const unsigned char*) Buffer::Data(buffer);
 
-    if (!d2i_ECPrivateKey(&(key->ec), &data, Buffer::Length(buffer))) {
-      // TODO: Error
-      return;
-    }
+    BIGNUM *bn = BN_bin2bn(data,Buffer::Length(buffer),BN_new());
+    EC_KEY_set_private_key(key->ec, bn);
+    BN_clear_free(bn);
 
     key->hasPrivate = true;
   }
@@ -274,6 +311,26 @@ public:
     }
 
     key->hasPublic = true;
+  }
+
+  static Handle<Value>
+  RegenerateSync(const Arguments& args)
+  {
+    HandleScope scope;
+    BitcoinKey* key = node::ObjectWrap::Unwrap<BitcoinKey>(args.This());
+
+    if (!key->hasPrivate) {
+      return VException("Regeneration requires a private key.");
+    }
+
+    EC_KEY *old = key->ec;
+
+    key->ec = EC_KEY_new_by_curve_name(NID_secp256k1);
+    EC_KEY_regenerate_key(key->ec, EC_KEY_get0_private_key(old));
+
+    EC_KEY_free(old);
+
+    return scope.Close(Undefined());
   }
 
   static Handle<Value>
