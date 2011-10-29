@@ -1,15 +1,12 @@
 var vows = require('vows'),
     assert = require('assert');
 
-var Storage = require('../lib/storage').Storage;
 var Connection = require('../lib/connection').Connection;
 var Script = require('../lib/script').Script;
 var Transaction = require('../lib/schema/transaction').Transaction;
 var Util = require('../lib/util');
 var encodeHex = Util.encodeHex;
 var decodeHex = Util.decodeHex;
-
-var storage = new Storage('mongodb://localhost/bitcointest');
 
 vows.describe('Transaction').addBatch({
   'An example transaction': {
