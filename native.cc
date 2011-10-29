@@ -160,7 +160,9 @@ public:
   }
 
   BitcoinKey() :
-    lastError(NULL)
+    lastError(NULL),
+    hasPrivate(false),
+    hasPublic(false)
   {
     ec = EC_KEY_new_by_curve_name(NID_secp256k1);
     if (ec == NULL) {
