@@ -8,6 +8,7 @@ var ScriptInterpreter = require("../lib/scriptinterpreter").ScriptInterpreter;
 var Connection = require('../lib/connection').Connection;
 var Util = require("../lib/util");
 var Transaction = require('../lib/schema/transaction').Transaction;
+var BitcoinKey = Util.BitcoinKey;
 
 logger.logger.levels.scrdbg = 1;
 
@@ -231,7 +232,22 @@ vows.describe('Script').addBatch({ "Stack after": {
   'OP_CHECKSIG_2':
   // Tx f4184fc596403b9d638783cf57adfe4c75c605f6356fbc91338530e9831e9e16
   // from livenet, block 170
-  checksigTest("0100000001c997a5e56e104102fa209c6a852dd90660a20b2d9c352423edce25857fcd3704000000004847304402204e45e16932b8af514961a1d3a1a25fdf3f4f7732e9d624c6c61548ab5fb8cd410220181522ec8eca07de4860a4acdd12909d831cc56cbbac4622082221a8768d1d0901ffffffff0200ca9a3b00000000434104ae1a62fe09c5f51b13905f07f06b99a2f7159b2225f374cd378d71302fa28414e7aab37397f554a7df5f142c21c1b7303b8a0626f1baded5c72a704f7e6cd84cac00286bee0000000043410411db93e1dcdb8a016b49840f8c53bc1eb68a382e97b1482ecad7b148a6909a5cb2e0eaddfb84ccf9744464f82e160bfa9b8b64f9d4c03f999b8643f656b412a3ac00000000", ["0411db93e1dcdb8a016b49840f8c53bc1eb68a382e97b1482ecad7b148a6909a5cb2e0eaddfb84ccf9744464f82e160bfa9b8b64f9d4c03f999b8643f656b412a3", OP_CHECKSIG])
+  checksigTest("0100000001c997a5e56e104102fa209c6a852dd90660a20b2d9c352423edce25857fcd3704000000004847304402204e45e16932b8af514961a1d3a1a25fdf3f4f7732e9d624c6c61548ab5fb8cd410220181522ec8eca07de4860a4acdd12909d831cc56cbbac4622082221a8768d1d0901ffffffff0200ca9a3b00000000434104ae1a62fe09c5f51b13905f07f06b99a2f7159b2225f374cd378d71302fa28414e7aab37397f554a7df5f142c21c1b7303b8a0626f1baded5c72a704f7e6cd84cac00286bee0000000043410411db93e1dcdb8a016b49840f8c53bc1eb68a382e97b1482ecad7b148a6909a5cb2e0eaddfb84ccf9744464f82e160bfa9b8b64f9d4c03f999b8643f656b412a3ac00000000", ["0411db93e1dcdb8a016b49840f8c53bc1eb68a382e97b1482ecad7b148a6909a5cb2e0eaddfb84ccf9744464f82e160bfa9b8b64f9d4c03f999b8643f656b412a3", OP_CHECKSIG]),
+
+  'OP_CHECKMULTISIG':
+  checkmultisigTest(2, 2),
+  
+  'OP_CHECKMULTISIG_2':
+  checkmultisigTest(1, 2),
+  
+  'OP_CHECKMULTISIG_3':
+  checkmultisigTest(2, 3),
+  
+  'OP_CHECKMULTISIG_4':
+  checkmultisigTest(10, 20),
+  
+  'OP_CHECKMULTISIG_5':
+  checkmultisigTest(20, 20)
 }}).export(module);
 
 /**
@@ -265,4 +281,62 @@ function checksigTest(txData, scriptPubKeyData) {
     assert.deepEqual(si.getPrimitiveStack(),
                      [1]);
   };
+};
+
+function checkmultisigTest(sigCount, keyCount) {
+  return function () {
+    if (sigCount < 0 || keyCount < 0 || sigCount > keyCount || keyCount > 20) {
+      throw new Error('Invalid OP_CHECKMULTISIG test');
+    }
+
+    var keys = [];
+    for (var i = 0; i < keyCount; i++) {
+      var key = BitcoinKey.generateSync();
+      keys.push(key);
+    }
+
+    // Convert number to script chunk - this algorithm works for numbers between
+    // 0 and 32. Since our range is 1 to 20
+    var sigCountOp = (sigCount > 16) ? ["1"+(sigCount-16)] : [sigCount+80];
+    var keyCountOp = (keyCount > 16) ? ["1"+(keyCount-16)] : [keyCount+80];
+
+    var scriptPubkey = Script.fromTestData([].concat(
+      sigCountOp,
+      keys.map(function (key) {
+        return key.public;
+      }),
+      keyCountOp,
+      [OP_CHECKMULTISIG]
+    ));
+
+    var tx = new Transaction({
+      ins: [{
+        o: Util.NULL_HASH
+      }],
+      outs: [{
+        v: Util.decodeHex('05f5e100'),
+        s: new Buffer(0)
+      }]
+    });
+    var scriptSig = signMultisig(scriptPubkey, keys.slice(0, sigCount), tx);
+    var si = new ScriptInterpreter();
+    si.eval(scriptSig, tx, 0, 1);
+    si.eval(scriptPubkey, tx, 0, 1);
+    assert.deepEqual(si.getPrimitiveStack(),
+                     [1]);
+  };
+};
+
+function signMultisig(scriptPubkey, keys, tx) {
+  var hash = tx.hashForSignature(scriptPubkey, 0, 1);
+
+  var scriptData = [];
+  scriptData.push(OP_0);
+
+  keys.forEach(function (key) {
+    var sig = key.signSync(hash);
+    scriptData.push(sig.concat(new Buffer([0x01])));
+  });
+
+  return Script.fromTestData(scriptData);
 };
