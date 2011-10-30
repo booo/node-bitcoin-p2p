@@ -12,7 +12,7 @@ var BitcoinKey = Util.BitcoinKey;
 
 logger.logger.levels.scrdbg = 1;
 
-vows.describe('Script').addBatch({ "Stack after": {
+vows.describe('Script').addBatch({ "Script with": {
   'OP_1NEGATE & OP_16':
   stackTest([OP_1NEGATE, OP_16], [-1, 16]),
 
@@ -26,10 +26,10 @@ vows.describe('Script').addBatch({ "Stack after": {
   stackTest([OP_1, OP_IF, OP_2, OP_4, OP_ELSE, OP_5, OP_ENDIF], [2, 4]),
 
   'OP_VERIFY':
-  stackTest([OP_1, OP_VERIFY, OP_0, OP_VERIFY], [0]),
+  stackTest([OP_1, OP_VERIFY, OP_0, OP_VERIFY], [0], 'OP_VERIFY negative'),
 
   'OP_RETURN':
-  stackTest([OP_1, OP_2, OP_RETURN, OP_3], [1, 2]),
+  stackTest([OP_1, OP_2, OP_RETURN, OP_3], [1, 2], 'OP_RETURN'),
 
   'OP_TOALTSTACK & OP_FROMALTSTACK':
   stackTest([OP_1, OP_TOALTSTACK, OP_2, OP_3, OP_TOALTSTACK, OP_4,
@@ -102,8 +102,9 @@ vows.describe('Script').addBatch({ "Stack after": {
   stackTest(["abcd", "abcd", OP_EQUAL, "abcd", "1234", OP_EQUAL], [1, 0]),
 
   'OP_EQUALVERIFY':
-  stackTest(["abcd", "abcd", OP_EQUALVERIFY,
-             "abcd", "1234", OP_EQUALVERIFY], [0]),
+  stackTest(["abcd", "abcd", OP_EQUALVERIFY, "abcd", "1234", OP_EQUALVERIFY],
+            [0],
+            'OP_EQUALVERIFY negative'),
 
   'OP_1ADD':
   stackTest([OP_1, OP_1ADD, OP_1ADD, OP_1ADD], [4]),
@@ -162,7 +163,8 @@ vows.describe('Script').addBatch({ "Stack after": {
 
   'OP_NUMEQUALVERIFY':
   stackTest([OP_11, OP_11, OP_NUMEQUALVERIFY, OP_5, OP_0, OP_NUMEQUALVERIFY],
-            [0]),
+            [0],
+            'OP_NUMEQUALVERIFY negative'),
 
   'OP_NUMNOTEQUAL':
   stackTest([OP_0, OP_12, OP_NUMNOTEQUAL, OP_8, OP_8, OP_NUMNOTEQUAL],
@@ -253,77 +255,115 @@ vows.describe('Script').addBatch({ "Stack after": {
 /**
  * Test whether a script results in the correct stack.
  */
-function stackTest(script, stack) {
-  return function () {
-    var si = run(script);
-    assert.deepEqual(si.getPrimitiveStack(),
-                     stack);
-  };
-};
+function stackTest(scriptChunks, stack, expectedError) {
+  var context = {
+    topic: function () {
+      var cb = this.callback;
+      var script = Script.fromTestData(scriptChunks);
+      var si = new ScriptInterpreter();
+      si.disableUnsafeOpcodes = false;
+      si.eval(script, null, null, null, function (e) {
+        cb(null, {
+          err: e,
+          stack: si.getPrimitiveStack()
+        });
+      });
+    },
 
-function run(scriptChunks) {
-  var script = Script.fromTestData(scriptChunks);
-  var interpreter = new ScriptInterpreter();
-  interpreter.disableUnsafeOpcodes = false;
-  interpreter.eval(script);
-  return interpreter;
+    'executes correctly': function (topic) {
+      assert.deepEqual(topic.stack, stack);
+    }
+  };
+
+  if (expectedError) {
+    context['with error '+expectedError] = function (topic) {
+      assert.equal(topic.err.message, expectedError);
+    };
+  } else {
+    context['without error'] = function (topic) {
+      assert.equal(topic.err, null);
+    }
+  }
+
+  return context;
 };
 
 function checksigTest(txData, scriptPubKeyData) {
-  return function () {
-    var txInfo = Connection.parseTx(Util.decodeHex(txData));
-    var tx = new Transaction(txInfo);
-    var scriptSig = new Script(tx.ins[0].s);
-    var scriptPubKey = Script.fromTestData(scriptPubKeyData);
-    var si = new ScriptInterpreter();
-    si.eval(scriptSig, tx, 0, 1);
-    si.eval(scriptPubKey, tx, 0, 1);
-    assert.deepEqual(si.getPrimitiveStack(),
-                     [1]);
+  return {
+    topic: function () {
+      var cb = this.callback;
+      var txInfo = Connection.parseTx(Util.decodeHex(txData));
+      var tx = new Transaction(txInfo);
+      var scriptSig = new Script(tx.ins[0].s);
+      var scriptPubKey = Script.fromTestData(scriptPubKeyData);
+      var si = new ScriptInterpreter();
+      si.evalTwo(scriptSig, scriptPubKey, tx, 0, 1, function (e) {
+        if (e) {
+          cb(e);
+          return;
+        }
+        cb(null, si.getPrimitiveStack());
+      });
+    },
+
+    'executes correctly': function (topic) {
+      assert.deepEqual(topic, [1]);
+    }
   };
 };
 
 function checkmultisigTest(sigCount, keyCount) {
-  return function () {
-    if (sigCount < 0 || keyCount < 0 || sigCount > keyCount || keyCount > 20) {
-      throw new Error('Invalid OP_CHECKMULTISIG test');
+  return {
+    'topic': function () {
+      var cb = this.callback;
+      var si = new ScriptInterpreter();
+
+      if (sigCount < 0 || keyCount < 0 || sigCount > keyCount || keyCount > 20) {
+        throw new Error('Invalid OP_CHECKMULTISIG test');
+      }
+
+      var keys = [];
+      for (var i = 0; i < keyCount; i++) {
+        var key = BitcoinKey.generateSync();
+        keys.push(key);
+      }
+
+      // Convert number to script chunk - this algorithm works for numbers between
+      // 0 and 32. Since our range is 1 to 20
+      var sigCountOp = (sigCount > 16) ? ["1"+(sigCount-16)] : [sigCount+80];
+      var keyCountOp = (keyCount > 16) ? ["1"+(keyCount-16)] : [keyCount+80];
+
+      var scriptPubkey = Script.fromTestData([].concat(
+        sigCountOp,
+        keys.map(function (key) {
+          return key.public;
+        }),
+        keyCountOp,
+        [OP_CHECKMULTISIG]
+      ));
+
+      var tx = new Transaction({
+        ins: [{
+          o: Util.NULL_HASH
+        }],
+        outs: [{
+          v: Util.decodeHex('05f5e100'),
+          s: new Buffer(0)
+        }]
+      });
+      var scriptSig = signMultisig(scriptPubkey, keys.slice(0, sigCount), tx);
+      si.evalTwo(scriptSig, scriptPubkey, tx, 0, 1, function (e) {
+        if (e) {
+          cb(e);
+          return;
+        }
+        cb(null, si.getPrimitiveStack());
+      });
+    },
+
+    'executes correctly': function (topic) {
+      assert.deepEqual(topic, [1]);
     }
-
-    var keys = [];
-    for (var i = 0; i < keyCount; i++) {
-      var key = BitcoinKey.generateSync();
-      keys.push(key);
-    }
-
-    // Convert number to script chunk - this algorithm works for numbers between
-    // 0 and 32. Since our range is 1 to 20
-    var sigCountOp = (sigCount > 16) ? ["1"+(sigCount-16)] : [sigCount+80];
-    var keyCountOp = (keyCount > 16) ? ["1"+(keyCount-16)] : [keyCount+80];
-
-    var scriptPubkey = Script.fromTestData([].concat(
-      sigCountOp,
-      keys.map(function (key) {
-        return key.public;
-      }),
-      keyCountOp,
-      [OP_CHECKMULTISIG]
-    ));
-
-    var tx = new Transaction({
-      ins: [{
-        o: Util.NULL_HASH
-      }],
-      outs: [{
-        v: Util.decodeHex('05f5e100'),
-        s: new Buffer(0)
-      }]
-    });
-    var scriptSig = signMultisig(scriptPubkey, keys.slice(0, sigCount), tx);
-    var si = new ScriptInterpreter();
-    si.eval(scriptSig, tx, 0, 1);
-    si.eval(scriptPubkey, tx, 0, 1);
-    assert.deepEqual(si.getPrimitiveStack(),
-                     [1]);
   };
 };
 
