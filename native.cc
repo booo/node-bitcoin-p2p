@@ -127,6 +127,18 @@ private:
     return 0;
   }
 
+  ECDSA_SIG *Sign(const unsigned char *digest, int digest_len)
+  {
+    ECDSA_SIG *sig;
+
+    sig = ECDSA_do_sign(digest, digest_len, ec);
+    if (sig == NULL) {
+      // TODO: ERROR
+    }
+
+    return sig;
+  }
+
 public:
 
   static Persistent<FunctionTemplate> s_ct;
@@ -150,6 +162,7 @@ public:
     NODE_SET_PROTOTYPE_METHOD(s_ct, "verifySignatureSync", VerifySignatureSync);
     NODE_SET_PROTOTYPE_METHOD(s_ct, "regenerateSync", RegenerateSync);
     NODE_SET_PROTOTYPE_METHOD(s_ct, "toDER", ToDER);
+    NODE_SET_PROTOTYPE_METHOD(s_ct, "signSync", SignSync);
 
     // Static methods
     NODE_SET_METHOD(s_ct->GetFunction(), "generateSync", GenerateSync);
@@ -535,6 +548,56 @@ public:
     } else {
       return VException("ECDSA_verify gave undefined return value");
     }
+  }
+
+  static Handle<Value>
+  SignSync(const Arguments& args)
+  {
+    HandleScope scope;
+    BitcoinKey* key = node::ObjectWrap::Unwrap<BitcoinKey>(args.This());
+  
+    if (args.Length() != 1) {
+      return VException("One argument expected: hash");
+    }
+    if (!Buffer::HasInstance(args[0])) {
+      return VException("Argument 'hash' must be of type Buffer");
+    }
+    if (!key->hasPrivate) {
+      return VException("BitcoinKey does not have a private key set");
+    }
+
+    Handle<Object> hash_buf = args[0]->ToObject();
+
+    const unsigned char *hash_data = (unsigned char *) Buffer::Data(hash_buf);
+
+    unsigned int hash_len = Buffer::Length(hash_buf);
+
+    if (hash_len != 32) {
+      return VException("Argument 'hash' must be Buffer of length 32 bytes");
+    }
+
+    // Create signature
+    ECDSA_SIG *sig = key->Sign(hash_data, hash_len);
+
+    // Export DER
+    unsigned int der_size = i2d_ECDSA_SIG(sig, NULL);
+    if (!der_size) {
+      // TODO: ERROR: "Error from i2d_ECPrivateKey(key->ec, NULL)"
+      return scope.Close(Null());
+    }
+    unsigned char *der_begin, *der_end;
+    der_begin = der_end = (unsigned char *)malloc(der_size);
+
+    if (i2d_ECDSA_SIG(sig, &der_end) != der_size) {
+      // TODO: ERROR: "Error from i2d_ECPrivateKey(key->ec, &der_end)"
+      return scope.Close(Null());
+    }
+    Buffer *der_buf = Buffer::New(der_size);
+    memcpy(Buffer::Data(der_buf), der_begin, der_size);
+
+    free(der_begin);
+
+    return scope.Close(der_buf->handle_);
   }
 };
 
