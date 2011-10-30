@@ -25,7 +25,13 @@ if (process.argv.length < 3) {
 }
 
 var params = process.argv.slice(3).map(function (param) {
-  return JSON.parse(param);
+  var value;
+  try {
+    value = JSON.parse(param);
+  } catch (e) {
+    value = param;
+  }
+  return value;
 });
 
 rpc.call(process.argv[2], params, function (err, result) {
