@@ -278,6 +278,9 @@ function stackTest(scriptChunks, stack, expectedError) {
           stack: si.getPrimitiveStack()
         });
       });
+
+      // Async topics must not return a value
+      return;
     },
 
     'executes correctly': function (topic) {
@@ -316,6 +319,9 @@ function txTest(txData, scriptPubKeyData, inIndex, expectedResult) {
         }
         cb(null, si);
       });
+
+      // Async topics must not return a value
+      return;
     },
 
     'executes correctly': function (topic) {
@@ -375,6 +381,9 @@ function checkmultisigTest(sigCount, keyCount) {
         }
         cb(null, si.getPrimitiveStack());
       });
+
+      // Async topics must not return a value
+      return;
     },
 
     'executes correctly': function (topic) {
