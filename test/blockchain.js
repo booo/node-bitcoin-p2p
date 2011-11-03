@@ -1,7 +1,7 @@
 var vows = require('vows'),
     assert = require('assert');
 
-var Storage = require('../lib/storage').Storage;
+var Storage = require('../lib/db/mongo/storage').Storage;
 var Settings = require('../lib/settings').Settings;
 var BlockChain = require('../lib/blockchain').BlockChain;
 var Miner = require('../lib/miner/javascript.js').JavaScriptMiner;
