@@ -32,6 +32,19 @@ static Handle<Value> VException(const char *msg) {
     return ThrowException(Exception::Error(String::New(msg)));
 }
 
+#if NODE_MAJOR_VERSION == 0 && NODE_MINOR_VERSION <= 4
+  #define EIO_CALLBACK(name) \
+    static void name(eio_req *req)
+
+  #define EIO_RETURN
+#else
+  #define EIO_CALLBACK(name) \
+    static int name(eio_req *req)
+
+  #define EIO_RETURN \
+    return 0;
+#endif
+
 
 int static inline EC_KEY_regenerate_key(EC_KEY *eckey, const BIGNUM *priv_key)
 {
@@ -117,14 +130,14 @@ private:
     return ECDSA_verify(0, digest, digest_len, sig, sig_len, ec);
   }
 
-  static int EIO_VerifySignature(eio_req *req)
+  EIO_CALLBACK(EIO_VerifySignature)
   {
     verify_sig_baton_t *b = static_cast<verify_sig_baton_t *>(req->data);
 
     b->result = b->key->VerifySignature(b->digest, b->digest_len,
                                         b->sig, b->sig_len);
 
-    return 0;
+    EIO_RETURN;
   }
 
   ECDSA_SIG *Sign(const unsigned char *digest, int digest_len)
