@@ -6,6 +6,7 @@
 #include <v8.h>
 
 #include <node.h>
+#include <node_version.h>
 #include <node_buffer.h>
 
 #include <openssl/bn.h>
@@ -32,7 +33,7 @@ static Handle<Value> VException(const char *msg) {
     return ThrowException(Exception::Error(String::New(msg)));
 }
 
-#if NODE_MAJOR_VERSION == 0 && NODE_MINOR_VERSION <= 4
+#if NODE_VERSION_AT_LEAST(0, 5, 4)
   #define EIO_CALLBACK(name) \
     static void name(eio_req *req)
 
