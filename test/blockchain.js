@@ -1,11 +1,13 @@
 var vows = require('vows'),
     assert = require('assert');
 
-var Storage = require('../lib/db/mongo/storage').Storage;
+var Storage = require('../lib/storage').Storage;
 var Settings = require('../lib/settings').Settings;
 var BlockChain = require('../lib/blockchain').BlockChain;
 var Miner = require('../lib/miner/javascript.js').JavaScriptMiner;
 var encodeHex = require('../lib/util').encodeHex;
+
+var Block = require('../lib/schema/block').Block;
 
 var Step = require('step');
 
@@ -23,11 +25,14 @@ vows.describe('Block Chain').addBatch({
       },
 
       'is a block': function (topic) {
-        assert.instanceOf(topic, topic.base.model('Block'));
+        assert.instanceOf(topic, Block);
       },
 
       'has a valid hash': function (topic) {
-        assert.isTrue(topic.checkHash());
+        assert.equal(
+          encodeHex(topic.getHash()),
+          '14dae1db98ca7efa42cc9ebe7ebb19bd88d80d6cbd3c4a993c20b47401d238c6'
+        );
       },
 
       'has the correct hash': function (topic) {
@@ -146,6 +151,10 @@ vows.describe('Block Chain').addBatch({
 
           self.callback(err, resultBlock, topic);
         });
+      },
+
+      'returns a Block': function (err, result) {
+        assert.instanceOf(result, Block);
       },
 
       'returns A': function (err, resultBlock, topic) {
@@ -332,26 +341,33 @@ function makeEmptyTestChain(err) {
   var callback = this;
 
   var settings = new Settings();
-  var storage = new Storage('mongodb://localhost/bitcointest');
+  var storage = Storage.get('mongodb://localhost/bitcointest');
 
   settings.setUnitnetDefaults();
 
-  storage.emptyDatabase(function (err, result) {
+  storage.connect(function (err) {
     if (err) {
       callback(err);
       return;
     }
 
-    var chain = new BlockChain(storage, settings);
-    chain.on('initComplete', function (err) {
+    storage.emptyDatabase(function (err, result) {
       if (err) {
         callback(err);
         return;
       }
 
-      callback(null, chain);
+      var chain = new BlockChain(storage, settings);
+      chain.on('initComplete', function (err) {
+        if (err) {
+          callback(err);
+          return;
+        }
+
+        callback(null, chain);
+      });
+      chain.init();
     });
-    chain.init();
   });
 };
 
