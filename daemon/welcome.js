@@ -1,4 +1,4 @@
-var sys = require('sys');
+var util = require('util');
 var Bitcoin = require('../lib/bitcoin');
 require('colors');
 
@@ -11,4 +11,4 @@ var message =
   " LICENSE This program is free software; you can redistribute it and/or modify\n" +
   "         it under the terms of the MIT license.\n";
 
-sys.puts("\n"+message);
+util.puts("\n"+message);

@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-var sys = require('sys');
+var util = require('util');
 
 var logger = require('../lib/logger');
 var getConfig = require('./init').getConfig;
@@ -37,8 +37,8 @@ var params = process.argv.slice(3).map(function (param) {
 rpc.call(process.argv[2], params, function (err, result) {
   if (err) {
     logger.error("RPC Error: "+
-                 (err.stack ? err.stack : sys.inspect(err)));
+                 (err.stack ? err.stack : util.inspect(err)));
     process.exit(1);
   }
-  sys.puts(sys.inspect(result, false, null));
+  util.puts(util.inspect(result, false, null));
 });
