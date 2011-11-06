@@ -1,4 +1,4 @@
-var sys = require('sys');
+var util = require('util');
 var path = require('path');
 var yanop = require('yanop');
 
@@ -91,7 +91,7 @@ var getConfig = exports.getConfig = function getConfig(initConfig) {
   } catch (e) {
     if (/^Cannot find module /.test(e.message)) {
       logger.warn('No configuration file found!');
-      sys.puts(
+      util.puts(
         "\n" +
           "BitcoinJS was unable to locate your config file under:\n" +
           "" + path.resolve(__dirname, configPath) + ".js\n" +

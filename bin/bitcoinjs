@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 var fs = require('fs');
-var sys = require('sys');
+var util = require('util');
 var path = require('path');
 var Step = require('step');
 var logger = require('../lib/logger');
@@ -239,13 +239,13 @@ case "help":
       process.exit(1);
     }
   } else {
-    sys.puts(usage);
+    util.puts(usage);
   }
   break;
 
 default:
   logger.error("Unknown command: '"+command+"'");
-  sys.puts(usage);
+  util.puts(usage);
 }
 
 
