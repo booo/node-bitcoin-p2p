@@ -28,6 +28,7 @@ var testBlock3 = new Block({
 });
 
 var testBlock4 = new Block({
+  prev_hash: testBlock2.getHash(),
   nonce: 4,
   height: 9,
   active: true
@@ -114,6 +115,42 @@ vows.describe('Storage').addBatch({
       "that retained its 'active' flag": function (topic) {
         assert.equal(topic.active,
                      testBlock1.active);
+      }
+    },
+
+    'can fetch a block by previous hash': {
+      topic: function (storage) {
+        var callback = this.callback;
+
+        storage.getBlockByPrev(testBlock2.getHash(), function (err, block) {
+          if (err) {
+            callback(err);
+            return;
+          }
+
+          callback(null, block);
+        });
+      },
+
+      'returning a Block': function (topic) {
+        assert.instanceOf(topic, Block);
+      },
+
+      'with the right hash': function (topic) {
+        assert.equal(
+          encodeHex(topic.calcHash()),
+          encodeHex(testBlock4.calcHash())
+        );
+      },
+
+      'with the right height': function (topic) {
+        assert.equal(topic.height,
+                     testBlock4.height);
+      },
+
+      "that retained its 'active' flag": function (topic) {
+        assert.equal(topic.active,
+                     testBlock4.active);
       }
     },
 

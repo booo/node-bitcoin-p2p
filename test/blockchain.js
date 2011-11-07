@@ -11,7 +11,18 @@ var Block = require('../lib/schema/block').Block;
 
 var Step = require('step');
 
+var storage;
 vows.describe('Block Chain').addBatch({
+  'A block chain storage': {
+    topic: function () {
+      storage = Storage.get('mongodb://localhost/bitcointest');
+      storage.connect(this.callback);
+    },
+    'connects successfully': function (topic) {
+      
+    }
+  }
+}).addBatch({
   'An empty block chain': {
     topic: makeTestChain(),
 
@@ -341,33 +352,25 @@ function makeEmptyTestChain(err) {
   var callback = this;
 
   var settings = new Settings();
-  var storage = Storage.get('mongodb://localhost/bitcointest');
 
   settings.setUnitnetDefaults();
 
-  storage.connect(function (err) {
+  storage.emptyDatabase(function (err, result) {
     if (err) {
       callback(err);
       return;
     }
 
-    storage.emptyDatabase(function (err, result) {
+    var chain = new BlockChain(storage, settings);
+    chain.on('initComplete', function (err) {
       if (err) {
         callback(err);
         return;
       }
 
-      var chain = new BlockChain(storage, settings);
-      chain.on('initComplete', function (err) {
-        if (err) {
-          callback(err);
-          return;
-        }
-
-        callback(null, chain);
-      });
-      chain.init();
+      callback(null, chain);
     });
+    chain.init();
   });
 };
 
