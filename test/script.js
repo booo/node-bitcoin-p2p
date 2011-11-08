@@ -236,6 +236,11 @@ vows.describe('Script').addBatch({ "Script with": {
   // from livenet, block 170
   txTest("0100000001c997a5e56e104102fa209c6a852dd90660a20b2d9c352423edce25857fcd3704000000004847304402204e45e16932b8af514961a1d3a1a25fdf3f4f7732e9d624c6c61548ab5fb8cd410220181522ec8eca07de4860a4acdd12909d831cc56cbbac4622082221a8768d1d0901ffffffff0200ca9a3b00000000434104ae1a62fe09c5f51b13905f07f06b99a2f7159b2225f374cd378d71302fa28414e7aab37397f554a7df5f142c21c1b7303b8a0626f1baded5c72a704f7e6cd84cac00286bee0000000043410411db93e1dcdb8a016b49840f8c53bc1eb68a382e97b1482ecad7b148a6909a5cb2e0eaddfb84ccf9744464f82e160bfa9b8b64f9d4c03f999b8643f656b412a3ac00000000", ["0411db93e1dcdb8a016b49840f8c53bc1eb68a382e97b1482ecad7b148a6909a5cb2e0eaddfb84ccf9744464f82e160bfa9b8b64f9d4c03f999b8643f656b412a3", OP_CHECKSIG]),
 
+  'OP_CHECKSIG_3':
+  // Tx c99c49da4c38af669dea436d3e73780dfdb6c1ecf9958baa52960e8baee30e73
+  // from livenet, block 110300
+  txTest("01000000010276b76b07f4935c70acf54fbf1f438a4c397a9fb7e633873c4dd3bc062b6b40000000008c493046022100d23459d03ed7e9511a47d13292d3430a04627de6235b6e51a40f9cd386f2abe3022100e7d25b080f0bb8d8d5f878bba7d54ad2fda650ea8d158a33ee3cbd11768191fd004104b0e2c879e4daf7b9ab68350228c159766676a14f5815084ba166432aab46198d4cca98fa3e9981d0a90b2effc514b76279476550ba3663fdcaff94c38420e9d5000000000100093d00000000001976a9149a7b0f3b80c6baaeedce0a0842553800f832ba1f88ac00000000", [OP_DUP, OP_HASH160, "dc44b1164188067c3a32d4780f5996fa14a4f2d9", OP_EQUALVERIFY, OP_CHECKSIG]),
+
   'OP_CHECKMULTISIG':
   checkmultisigTest(2, 2),
   
@@ -295,7 +300,7 @@ function stackTest(scriptChunks, stack, expectedError) {
   } else {
     context['without error'] = function (topic) {
       assert.equal(topic.err, null);
-    }
+    };
   }
 
   return context;
@@ -311,8 +316,7 @@ function txTest(txData, scriptPubKeyData, inIndex, expectedResult) {
       var tx = new Transaction(txInfo);
       var scriptSig = new Script(tx.ins[inIndex].s);
       var scriptPubKey = Script.fromTestData(scriptPubKeyData);
-      var si = new ScriptInterpreter();
-      si.evalTwo(scriptSig, scriptPubKey, tx, inIndex, 1, function (e) {
+      var si = tx.verifyInput(inIndex, scriptPubKey, function (e) {
         if (e) {
           cb(e);
           return;
@@ -374,7 +378,7 @@ function checkmultisigTest(sigCount, keyCount) {
         }]
       });
       var scriptSig = signMultisig(scriptPubkey, keys.slice(0, sigCount), tx);
-      si.evalTwo(scriptSig, scriptPubkey, tx, 0, 1, function (e) {
+      si.evalTwo(scriptSig, scriptPubkey, tx, 0, 0, function (e) {
         if (e) {
           cb(e);
           return;
@@ -400,7 +404,10 @@ function signMultisig(scriptPubkey, keys, tx) {
 
   keys.forEach(function (key) {
     var sig = key.signSync(hash);
-    scriptData.push(sig.concat(new Buffer([0x01])));
+    var sigData = new Buffer(sig.length+1);
+    sig.copy(sigData);
+    sigData[sigData.length-1] = 1;
+    scriptData.push(sigData);
   });
 
   return Script.fromTestData(scriptData);
