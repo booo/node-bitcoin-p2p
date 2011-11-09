@@ -93,31 +93,22 @@ private:
   bool hasPrivate;
   bool hasPublic;
 
-  static BitcoinKey *Generate()
+  void Generate()
   {
-    BitcoinKey *key = new BitcoinKey();
-    if (key->lastError) {
-      return key;
+    if (!EC_KEY_generate_key(ec)) {
+      lastError = "Error from EC_KEY_generate_key";
+      return;
     }
 
-    if (!EC_KEY_generate_key(key->ec)) {
-      key->lastError = "Error from EC_KEY_generate_key";
-      return key;
-    }
-
-    key->hasPublic = true;
-    key->hasPrivate = true;
-
-    return key;
+    hasPublic = true;
+    hasPrivate = true;
   }
 
   struct verify_sig_baton_t {
     // Parameters
     BitcoinKey *key;
-    const unsigned char *digest;
-    int digest_len;
-    const unsigned char *sig;
-    int sig_len;
+    Persistent<Object> digest;
+    Persistent<Object> sig;
 
     // Result
     // -1 = error, 0 = bad sig, 1 = good
@@ -135,8 +126,10 @@ private:
   {
     verify_sig_baton_t *b = static_cast<verify_sig_baton_t *>(req->data);
 
-    b->result = b->key->VerifySignature(b->digest, b->digest_len,
-                                        b->sig, b->sig_len);
+    b->result = b->key->VerifySignature(
+      (const unsigned char *)Buffer::Data(b->digest), Buffer::Length(b->digest),
+      (const unsigned char *)Buffer::Data(b->sig), Buffer::Length(b->sig)
+    );
 
     EIO_RETURN;
   }
@@ -202,26 +195,34 @@ public:
     EC_KEY_free(ec);
   }
 
-  static Handle<Value>
-  New(const Arguments& args)
+  static BitcoinKey*
+  New()
   {
     HandleScope scope;
 
-    // If an "External" is passed in as the argument, wrap it, otherwise
-    // instantiate a new C++ object. Credit goes to Christian Plesner Hansen
-    // for this method.
-    if (args[0]->IsExternal()) {
-      Handle<External> external = Handle<External>::Cast(args[0]);
-      args.This()->SetInternalField(0, external);
-    } else {
-      BitcoinKey* key = new BitcoinKey();
-      if (key->lastError != NULL) {
-        return VException(key->lastError);
-      }
+    Local<Object> k = s_ct->GetFunction()->NewInstance(0, NULL);
+    if (k.IsEmpty()) return NULL;
 
-      key->Wrap(args.This());
+    return ObjectWrap::Unwrap<BitcoinKey>(k);
+  }
+
+  static Handle<Value>
+  New(const Arguments& args)
+  {
+    if (!args.IsConstructCall()) {
+      return FromConstructorTemplate(s_ct, args);
     }
-    return args.This();
+
+    HandleScope scope;
+    
+    BitcoinKey* key = new BitcoinKey();
+    if (key->lastError != NULL) {
+      return VException(key->lastError);
+    }
+
+    key->Wrap(args.Holder());
+
+    return scope.Close(args.This());
   }
 
   static Handle<Value>
@@ -229,17 +230,15 @@ public:
   {
     HandleScope scope;
 
-    BitcoinKey* key = Generate();
+    BitcoinKey* key = BitcoinKey::New();
+
+    key->Generate();
 
     if (key->lastError != NULL) {
       return VException(key->lastError);
     }
 
-    Handle<Function> cons = s_ct->GetFunction();
-    Handle<Value> external = External::New(key);
-    Handle<Value> result = cons->NewInstance(1, &external);
-
-    return scope.Close(result);
+    return scope.Close(key->handle_);
   }
 
   static Handle<Value>
@@ -450,22 +449,14 @@ public:
     Handle<Object> hash_buf = args[0]->ToObject();
     Handle<Object> sig_buf = args[1]->ToObject();
 
-    const unsigned char *hash_data = (unsigned char *) Buffer::Data(hash_buf);
-    const unsigned char *sig_data = (unsigned char *) Buffer::Data(sig_buf);
-
-    unsigned int hash_len = Buffer::Length(hash_buf);
-    unsigned int sig_len = Buffer::Length(sig_buf);
-
-    if (hash_len != 32) {
+    if (Buffer::Length(hash_buf) != 32) {
       return VException("Argument 'hash' must be Buffer of length 32 bytes");
     }
 
     verify_sig_baton_t *baton = new verify_sig_baton_t();
     baton->key = key;
-    baton->digest = hash_data;
-    baton->digest_len = hash_len;
-    baton->sig = sig_data;
-    baton->sig_len = sig_len;
+    baton->digest = Persistent<Object>::New(hash_buf);
+    baton->sig = Persistent<Object>::New(sig_buf);
     baton->result = -1;
     baton->cb = Persistent<Function>::New(cb);
 
@@ -474,7 +465,7 @@ public:
     eio_custom(EIO_VerifySignature, EIO_PRI_DEFAULT, VerifySignatureCallback, baton);
     ev_ref(EV_DEFAULT_UC);
 
-    return Undefined();
+    return scope.Close(Undefined());
   }
 
   static int
@@ -484,6 +475,8 @@ public:
     verify_sig_baton_t *baton = static_cast<verify_sig_baton_t *>(req->data);
     ev_unref(EV_DEFAULT_UC);
     baton->key->Unref();
+    baton->digest.Dispose();
+    baton->sig.Dispose();
 
     Local<Value> argv[2];
 
@@ -610,6 +603,7 @@ public:
     memcpy(Buffer::Data(der_buf), der_begin, der_size);
 
     free(der_begin);
+    ECDSA_SIG_free(sig);
 
     return scope.Close(der_buf->handle_);
   }
