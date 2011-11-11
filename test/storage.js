@@ -34,6 +34,13 @@ var testBlock4 = new Block({
   active: true
 });
 
+var bogusBlock = new Block({
+  prev_hash: testBlock4.getHash(),
+  nonce: 21,
+  height: 15,
+  active: true
+});
+
 var testTx1 = new Transaction({
 });
 
@@ -249,6 +256,24 @@ vows.describe('Storage').addBatch({
           encodeHex(topic[1].calcHash()),
           encodeHex(testBlock4.getHash())
         );
+      }
+    },
+
+    'querying a non-existent block by hash': {
+      topic: function (storage) {
+        var callback = this.callback;
+
+        storage.getBlockByHash(bogusBlock.getHash(), function (err, block) {
+          if (err) {
+            callback(err);
+            return;
+          }
+
+          callback(null, block);
+        });
+      },
+      'returns undefined': function (topic) {
+        assert.isUndefined(topic);
       }
     },
 
