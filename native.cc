@@ -107,8 +107,12 @@ private:
   struct verify_sig_baton_t {
     // Parameters
     BitcoinKey *key;
-    Persistent<Object> digest;
-    Persistent<Object> sig;
+    const unsigned char *digest;
+    const unsigned char *sig;
+    int digestLen;
+    int sigLen;
+    Persistent<Object> digestBuf;
+    Persistent<Object> sigBuf;
 
     // Result
     // -1 = error, 0 = bad sig, 1 = good
@@ -127,8 +131,8 @@ private:
     verify_sig_baton_t *b = static_cast<verify_sig_baton_t *>(req->data);
 
     b->result = b->key->VerifySignature(
-      (const unsigned char *)Buffer::Data(b->digest), Buffer::Length(b->digest),
-      (const unsigned char *)Buffer::Data(b->sig), Buffer::Length(b->sig)
+      b->digest, b->digestLen,
+      b->sig, b->sigLen
     );
 
     EIO_RETURN;
@@ -455,8 +459,12 @@ public:
 
     verify_sig_baton_t *baton = new verify_sig_baton_t();
     baton->key = key;
-    baton->digest = Persistent<Object>::New(hash_buf);
-    baton->sig = Persistent<Object>::New(sig_buf);
+    baton->digest = (unsigned char *)Buffer::Data(hash_buf);
+    baton->digestLen = Buffer::Length(hash_buf);
+    baton->digestBuf = Persistent<Object>::New(hash_buf);
+    baton->sig = (unsigned char *)Buffer::Data(sig_buf);
+    baton->sigLen = Buffer::Length(sig_buf);
+    baton->sigBuf = Persistent<Object>::New(sig_buf);
     baton->result = -1;
     baton->cb = Persistent<Function>::New(cb);
 
@@ -475,8 +483,8 @@ public:
     verify_sig_baton_t *baton = static_cast<verify_sig_baton_t *>(req->data);
     ev_unref(EV_DEFAULT_UC);
     baton->key->Unref();
-    baton->digest.Dispose();
-    baton->sig.Dispose();
+    baton->digestBuf.Dispose();
+    baton->sigBuf.Dispose();
 
     Local<Value> argv[2];
 
