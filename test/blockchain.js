@@ -233,6 +233,80 @@ function testEngine(label, uri) {
                      encodeHex(topic.blocks.H.getHash()));
       }
     }
+  }).addBatch({
+    'A longer chain': {
+      topic: makeTestChain({
+        blocks: [
+          // O -> A -> B -> C -> ... -> Z
+          ['O', 'A'],
+          ['A', 'B'],
+          ['B', 'C'],
+          ['C', 'D'],
+          ['E', 'F'],
+          ['D', 'E'],
+          ['E', 'F'],
+          ['F', 'G'],
+          ['G', 'H'],
+          ['H', 'I'],
+          ['I', 'J'],
+          ['J', 'K'],
+          ['K', 'L'],
+          ['L', 'M'],
+          ['M', 'N'],
+          ['N', 'P'], // No O, because that's what the genesis block is called
+          ['P', 'Q'],
+          ['Q', 'R'],
+          ['R', 'S'],
+          ['S', 'T'],
+          ['T', 'U'],
+          ['U', 'V'],
+          ['V', 'W'],
+          ['W', 'X'],
+          ['X', 'Y'],
+          ['Y', 'Z']
+        ]
+      }),
+
+      'has height 25' : function (topic) {
+        assert.equal(topic.chain.getTopBlock().height, 25);
+      },
+
+      'creates a block locator that': {
+        topic: function (topic) {
+          var callback = this.callback;
+          topic.chain.getBlockLocator(function (err, locator) {
+            if (err) {
+              callback(err);
+              return;
+            }
+
+            callback(null, {
+              chain: topic.chain,
+              blocks: topic.blocks,
+              locator: locator
+            });
+          });
+          return;
+        },
+
+        'is an Array of hashes': function (topic) {
+          assert.isTrue(Array.isArray(topic.locator));
+          topic.locator.forEach(function (hash) {
+            assert.isTrue(Buffer.isBuffer(hash));
+            assert.equal(hash.length, 32);
+          });
+        },
+
+        'contains blocks Z, Y, X, W, V, U, T, S, R, Q, P, M, I, A':function (topic) {
+          var expect = 'ZYXWVUTSRQPMIA'.split('');
+          assert.equal(topic.locator.length, expect.length);
+          expect.forEach(function (id, i) {
+            assert.equal(encodeHex(topic.locator[i]),
+                         encodeHex(topic.blocks[id].getHash()));
+          });
+        }
+      }
+    }
   }).export(module);
 
   function makeTestChain(descriptor) {
