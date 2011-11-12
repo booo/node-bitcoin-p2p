@@ -72,8 +72,9 @@ function getSettings(prefix) {
 function createNode(settings, callback) {
   try {
     var node = new Node(settings);
-    node.addListener('stateChange', function (e) {
+    node.on('stateChange', function (e) {
       if (e.newState == 'netConnect') {
+        node.removeListener('stateChange', arguments.callee);
         callback(null, node);
       }
     });
