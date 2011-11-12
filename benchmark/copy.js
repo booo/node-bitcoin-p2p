@@ -18,6 +18,10 @@ suite.add('Buffer[]', function() {
   }
 });
 
+suite.add('Buffer#slice', function () {
+  var target = subject.slice();
+});
+
 suite.add('Buffer#toString', function () {
   var target = subject.toString('binary');
 });
