@@ -408,8 +408,9 @@ function testEngine(label, uri) {
     }
 
     return block.mineNextBlock(
+      chain,
       fakeBeneficiary,
-      Math.floor(new Date().getTime() / 1000),
+      null, // Use default time
       new Miner(),
       function (err, newBlock, txs) {
         if (err) {
