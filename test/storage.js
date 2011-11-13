@@ -55,7 +55,7 @@ try {
 } catch (e) {}
 
 if (leveldbAvailable) {
-  testEngine("LevelDB", 'leveldb:///tmp/unittest');
+  testEngine("LevelDB", 'leveldb:///tmp/unittest_storage');
 }
 
 var mongodbAvailable = false;
@@ -67,7 +67,7 @@ try {
 } catch (e) {}
 
 if (mongodbAvailable) {
-  testEngine("MongoDB", 'mongodb://localhost/bitcointest');
+  testEngine("MongoDB", 'mongodb://localhost/bitcointest_storage');
 }
 
 

@@ -63,7 +63,7 @@ vows.describe('Network Simulation').addBatch({
 function getSettings(prefix) {
   var settings = new Settings();
   settings.setUnitnetDefaults();
-  settings.storage.uri = 'leveldb:///tmp/'+prefix;
+  settings.storage.uri = 'leveldb:///tmp/unittest_simnet_'+prefix;
   settings.jsonrpc.enable = false;
   settings.network.noListen = true;
   return settings;
