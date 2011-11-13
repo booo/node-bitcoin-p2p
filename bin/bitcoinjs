@@ -5,6 +5,7 @@ var util = require('util');
 var path = require('path');
 var Step = require('step');
 var logger = require('../lib/logger');
+var childProcess = require('child_process');
 
 var args = process.argv.slice(2);
 var command = args.shift();
@@ -200,12 +201,43 @@ case "verify":
   break;
 
 case "test":
-  var vowsBin = path.resolve(__dirname, "../node_modules/vows/bin/vows");
-  var testDir = path.resolve(__dirname, "../test/");
-  var testCases = fs.readdirSync(testDir);
-  testCases = testCases.map(function (p) { return testDir + "/" + p; });
-  args.unshift('--spec');
-  sh(vowsBin, testCases.concat(args));
+  Step(
+    function findVows() {
+      var callback = this;
+      var vowsBin = path.resolve(__dirname, "../node_modules/vows/bin/vows");
+      var found = false;
+      
+      if (isExecutable(vowsBin)) {
+        callback(null, vowsBin);
+      } else {
+        childProcess.exec('which vows', function (err, vowsBin) {
+          if (err) {
+            callback(err);
+            return;
+          }
+          console.log('OUT', !!vowsBin, path.existsSync(vowsBin));
+          if (vowsBin && path.existsSync(vowsBin)) {
+            callback(null, vowsBin);
+          } else {
+            callback("Not found, please install using "
+                     + "'npm install -g vows'");
+          }
+        });
+      }
+    },
+    function executeTests(err, vowsBin) {
+      if (err) {
+        logger.error("Error loading vows: "+
+                     (err.stack ? err.stack : err.toString()));
+        return;
+      }
+      var testDir = path.resolve(__dirname, "../test/");
+      var testCases = fs.readdirSync(testDir);
+      testCases = testCases.map(function (p) { return testDir + "/" + p; });
+      args.unshift('--spec');
+      sh(vowsBin, testCases.concat(args));
+    }
+  );
   break;
 
 case "make-man":
@@ -248,6 +280,14 @@ default:
   util.puts(usage);
 }
 
+function isExecutable(path) {
+  try {
+    var stat = fs.lstatSync(path);
+    // TODO: Actually check the file permissions for +x
+    return true;
+  } catch (err) {}
+  return false;
+};
 
 function sh(command, args, opts, callback) {
   if ("function" === typeof args) {
@@ -265,12 +305,8 @@ function sh(command, args, opts, callback) {
   if (!Array.isArray(args)) {
     args = [];
   }
-  var stdio = process.binding("stdio");
-  var fds = [ stdio.stdinFD || 0
-            , stdio.stdoutFD || 1
-            , stdio.stderrFD || 2 ];
 
-  opts.customFds = opts.customFds || fds;
+  opts.customFds = [0, 1, 2];
 
   var proc = require('child_process').spawn(command, args, opts);
   if ("function" === typeof callback) {
