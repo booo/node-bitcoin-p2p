@@ -2,7 +2,7 @@ var vows = require('vows'),
     assert = require('assert');
 
 var Binary = require('binary');
-var bigint = require('bigint');
+var bignum = require('bignum');
 
 var Util = require('../lib/util');
 var logger = require('../lib/logger');
@@ -35,7 +35,7 @@ vows.describe('Bitcoin Utils').addBatch({
     'are correctly represented in a buffer': function (topic) {
       var decoded = Util.decodeDiffBits(topic);
       var decodedInt = Util.decodeDiffBits(topic, true);
-      assert.equal(bigint.fromBuffer(decoded).toString(16),
+      assert.equal(bignum.fromBuffer(decoded).toString(16),
                    decodedInt.toString(16));
     },
     'can be re-encoded': function (topic) {
