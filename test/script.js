@@ -141,10 +141,10 @@ vows.describe('Script').addBatch({ "Script with": {
   stackTest([OP_11, OP_3, OP_MUL, OP_DUP, OP_1NEGATE, OP_MUL], [33, -33]),
 
   'OP_DIV':
-  stackTest([OP_15, OP_2, OP_DIV, OP_DUP, OP_1NEGATE, OP_5, OP_MUL, OP_DIV], [7, -2]),
+  stackTest([OP_15, OP_2, OP_DIV, OP_DUP, OP_1NEGATE, OP_5, OP_MUL, OP_DIV], [7, -1]),
 
   'OP_MOD':
-  stackTest([OP_15, OP_4, OP_MOD, OP_1NEGATE, OP_5, OP_MOD], [3, 4]),
+  stackTest([OP_15, OP_4, OP_MOD, OP_1NEGATE, OP_5, OP_MOD], [3, -1]),
 
   'OP_LSHIFT':
   stackTest([OP_15, OP_3, OP_LSHIFT, OP_DUP, OP_16, OP_LSHIFT], [120, "000078"]),
