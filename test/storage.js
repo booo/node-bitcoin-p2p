@@ -250,6 +250,47 @@ function testEngine(label, uri) {
         }
       },
 
+      'can fetch a slice of the block chain': {
+        topic: function (storage) {
+          var callback = this.callback;
+
+          storage.getBlockSlice(
+            2, 3,
+            function (err, blocks) {
+              if (err) {
+                callback(err);
+                return;
+              }
+              
+              callback(null, blocks);
+            }
+          );
+        },
+        'returning an array of hashes': function (topic) {
+          assert.isTrue(Array.isArray(topic));
+          topic.forEach(function (hash) {
+            assert.isTrue(Buffer.isBuffer(hash));
+          });
+        },
+        'of the right length': function (topic) {
+          assert.equal(topic.length, 3);
+        },
+        'matching the right hashes': function (topic) {
+          assert.equal(
+            encodeHex(topic[0]),
+            encodeHex(testBlock3.getHash())
+          );
+          assert.equal(
+            encodeHex(topic[1]),
+            encodeHex(testBlock1.getHash())
+          );
+          assert.equal(
+            encodeHex(topic[2]),
+            encodeHex(testBlock2.getHash())
+          );
+        }
+      },
+
       'can fetch blocks by heights': {
         topic: function (storage) {
           var callback = this.callback;
