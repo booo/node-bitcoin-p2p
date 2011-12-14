@@ -1,5 +1,16 @@
 var cfg = new (require('../lib/settings').Settings)();
 
+// GENERAL SECTION
+// -----------------------------------------------------------------------------
+//
+// This folder should be a writable folder where Node.js can store information
+// persistently if needed. Some DB backends also default to storing the block
+// chain data here.
+//
+// The default is '~/.bitcoinjs'
+//
+//cfg.datadir = process.env.HOME + '/.bitcoinjs';
+
 // JSON-RPC SECTION
 // -----------------------------------------------------------------------------
 //
@@ -67,9 +78,31 @@ cfg.network.noListen = false;
 // -----------------------------------------------------------------------------
 // URI
 //
-// This is the MongoDB URI that BitcoinJS will use as its database. For more
-// information, see: http://www.mongodb.org/display/DOCS/Connections
-cfg.storage.uri = "mongodb://localhost/bitcoin";
+// This setting is used to select and configure a database backend.
+//
+// LevelDB (default) (recommended):
+//   LevelDB is a very fast built-in database that BitcoinJS ships with. You
+//   don't need to install anything else. LevelDB does not give you a way to
+//   access the data directly from another application. Instead BitcoinJS
+//   itself acts as a database server via the JSON-RPC API.
+//
+//   Tip: Leave cfg.storage.uri set to null and LevelDB will automatically use
+//        your datadir for storing its files.
+//
+//   Example: 'leveldb:///your/folder/here/'
+//
+// MongoDB
+//   MongoDB is a JavaScript/JSON based object storage that supports advanced
+//   features. To use this you must install a MongoDB server and then specify
+//   the correct URI here.
+//
+//   For more information on the format for MongoDB URIs, see:
+//   http://www.mongodb.org/display/DOCS/Connections
+//
+//   Example: 'mongodb://localhost/bitcoin'
+//
+//cfg.storage.uri = 'mongodb://localhost/bitcoin';
+//cfg.storage.uri = null;
 
 // OTHER SETTINGS
 // -----------------------------------------------------------------------------
