@@ -4,3 +4,5 @@ daemon/settings.js
 .lock-wscript
 native.node
 .DS_Store
+coverage.html
+test-cov

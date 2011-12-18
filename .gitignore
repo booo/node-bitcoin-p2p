@@ -3,3 +3,5 @@ build-cc
 native.node
 node_modules
 daemon/settings.js
+coverage.html
+test-cov
