@@ -5,4 +5,5 @@ daemon/settings.js
 native.node
 .DS_Store
 coverage.html
-test-cov
+test-cov/
+v8.log

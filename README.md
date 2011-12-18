@@ -41,8 +41,8 @@ Once you have all prerequisites, this one-liner will install the
 latest version straight from NPM:
 
 ``` sh
-# Install node-bitcoin-p2p globally
-sudo npm install bitcoin-p2p -g
+# Install BitcoinJS Server globally
+sudo npm install bitcoinjs -g
 ```
 
 Please refer to the wiki for detailed [installation
