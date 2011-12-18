@@ -1,36 +1,39 @@
 # node-bitcoin-p2p
 
-This is a client library for the Bitcoin P2P network, written for
-Node.js, using MongoDB as its back end.
+This is an implementation of a Bitcoin node in Node.js. It is intended
+as a powerful alternative to the standard bitcoind that ships with the
+original client.
 
-# Differences to official client
+# Differences to original client
 
-The official client contains the node, wallet, GUI and miner. This
-library only contains the node, i.e. the P2P part of Bitcoin. Its
-intended use is as a server component to give lighter clients
-access to the data in the block chain (in real-time.)
+The original client contains the node, wallet, GUI and miner. This
+library contains a highly optimized version of the node, i.e. the P2P
+part of Bitcoin. Its main intended use is as a server component to
+give lighter clients access to the data in the block chain (in
+real-time.)
+
+But it can also be used for writing other software that
+requires real-time data from the block chain or wants to run queries
+against it.
+
 
 # Installation
 
-
 ## Prerequisites
 
-* [Node.js](https://github.com/joyent/node) 0.4.8+
-* [NPM](https://github.com/isaacs/npm) 1.0+
-* [MongoDB](http://www.mongodb.org/) 1.6+
-  **Note:** Due to the database size, you need to be using the 64-bit
-  build of MongoDB.
 * [OpenSSL](http://www.openssl.org/) (lib and headers)
-* [libgmp](http://gmplib.org/) (lib and headers)
 * [pkg-config](http://www.freedesktop.org/wiki/Software/pkg-config)
+* [Node.js](https://github.com/joyent/node) 0.6.5+
 
-Node.js and NPM should be compiled manually based on the latest stable
-release. MongoDB can be installed using any method. The remaining
-dependencies can be installed as follows (on Debian/Ubuntu):
+Node.js should be compiled manually based on the latest stable
+release.
 
-``` sh
-sudo apt-get install libssl-dev libgmp3-dev pkg-config
-```
+### MongoDB
+
+If you wish to use a MongoDB database (most users will want to just
+use the built-in database), you need to setup a MongoDB server. This
+can be done using any method.
+
 
 ## Installation
 
@@ -119,8 +122,8 @@ bitcoinjs db-drop
 ```
 
 This won't be necessary once node-bitcoin-p2p is more stable, but for
-now new versions often break database compatibility and since it only
-takes about ten minutes to regenerate it makes sense to just reset it.
+now new versions often break database compatibility, so it's easiest
+to just reset it.
 
 
 # Tests
@@ -137,9 +140,9 @@ vows test/* --spec
 The library is currently alpha quality. Here are some things it
 currently lacks:
 
-- Verify difficulty transitions
-- Verify transactions in blocks
 - Respond to getblocks requests
+- Manage knowledge about other peers
+- DoS protections from Bitcoin 0.4+
 
 On top of that, it could use a lot more documentation, test
 cases and general bug fixing across the board.
@@ -157,8 +160,7 @@ If you see this error:
 This happens when the native components of node-bitcoin-p2p are not
 compiled yet.
 
-Make sure you have `libgmp3-dev` installed, then go to the
-node-bitcoin-p2p folder and run:
+Go to the node-bitcoin-p2p folder and run:
 
 ``` sh
 node-waf configure build
@@ -169,7 +171,7 @@ node-waf configure build
 node-bitcoin-p2p - Node.js Bitcoin client<br>
 Copyright (c) 2011 Stefan Thomas <justmoon@members.fsf.org>.
 
-Native extensions are<br>
+Some native extensions are<br>
 Copyright (c) 2011 Andrew Schaaf <andrew@andrewschaaf.com>
 
 Parts of this software are based on [BitcoinJ](http://code.google.com/p/bitcoinj/)<br>
