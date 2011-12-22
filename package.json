@@ -1,6 +1,6 @@
 {
   "name": "bitcoinjs",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Implementation of Bitcoin's peer-to-peer layer for Node.js",
   "main": "./lib/bitcoin",
   "keywords": [
