@@ -45,7 +45,7 @@ function testEngine(label, uri) {
         storage.connect(this.callback);
       },
       'connects successfully': function (topic) {
-        
+
       }
     }
   }).addBatch({
