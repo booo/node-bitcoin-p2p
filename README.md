@@ -1,4 +1,4 @@
-# node-bitcoin-p2p
+# BitcoinJS Server (node-bitcoin-p2p)
 
 This is an implementation of a Bitcoin node in Node.js. It is intended
 as a powerful alternative to the standard bitcoind that ships with the
@@ -28,7 +28,13 @@ against it.
 Node.js should be compiled manually based on the latest stable
 release.
 
-### MongoDB
+### LevelDB
+
+LevelDB is the default database back end in BitcoinJS 0.2+. It is
+bundled with the `node-leveldb` NPM module and is therefore installed
+automatically. No manual steps should be necessary.
+
+### MongoDB (optional)
 
 If you wish to use a MongoDB database (most users will want to just
 use the built-in database), you need to setup a MongoDB server. This
@@ -77,13 +83,13 @@ bitcoinjs help
 bitcoinjs db-drop
 
 # Uninstall the software
-sudo npm uninstall bitcoin-p2p -g
+sudo npm uninstall bitcoinjs -g
 ```
 
 
 ## Logging
 
-`node-bitcoin-p2p` logs using the winston library. Currently, it
+BitcoinJS logs using the winston library. Currently, it
 defaults to logging anything on the `debug` log level and higher. Here
 are the available log levels:
 
@@ -102,26 +108,26 @@ lib/logger.js or via the command line, e.g. `bitcoinjs run --bchdbg`.
 
 ## Advanced usage
 
-`node-bitcoin-p2p` is not only a daemon, but also a Node.js
+BitcoinJS is not only a daemon, but also a Node.js
 module/library. In most cases it's best to use the daemon via RPC. But
 sometimes you need the extra control that comes with directly linking
 to the code.
 
-For details on developing with `node-bitcoin-p2p` as a library, take a
+For details on developing with BitcoinJS as a library, take a
 look at the Developer Guide on the
 [wiki](https://github.com/bitcoinjs/node-bitcoin-p2p/wiki).
 
 
 # Upgrading
 
-When upgrading node-bitcoin-p2p it is a good idea to reset its
+When upgrading BitcoinJS it is a good idea to reset its
 database:
 
 ``` sh
 bitcoinjs db-drop
 ```
 
-This won't be necessary once node-bitcoin-p2p is more stable, but for
+This won't be necessary once BitcoinJS is more stable, but for
 now new versions often break database compatibility, so it's easiest
 to just reset it.
 
@@ -157,10 +163,10 @@ If you see this error:
 
     Error: Cannot find module '../build-cc/default/native'
 
-This happens when the native components of node-bitcoin-p2p are not
-compiled yet.
+This happens when the native components of BitcoinJS are not compiled
+yet.
 
-Go to the node-bitcoin-p2p folder and run:
+Go to the `bitcoinjs` folder and run:
 
 ``` sh
 node-waf configure build
@@ -168,7 +174,7 @@ node-waf configure build
 
 # Credits
 
-node-bitcoin-p2p - Node.js Bitcoin client<br>
+BitcoinJS Server (node-bitcoin-p2p) - Node.js Bitcoin client<br>
 Copyright (c) 2011 Stefan Thomas <justmoon@members.fsf.org>.
 
 Some native extensions are<br>
