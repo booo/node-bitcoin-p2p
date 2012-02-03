@@ -6,6 +6,8 @@ var yanop = require('yanop');
 var Bitcoin = require('../lib/bitcoin');
 var logger = require('../lib/logger');
 
+var mods = [];
+
 var getConfig = exports.getConfig = function getConfig(initConfig) {
   if ("object" !== typeof initConfig) {
     initConfig = {};
@@ -74,6 +76,11 @@ var getConfig = exports.getConfig = function getConfig(initConfig) {
     scrdbg: {
       type: yanop.flag,
       description: 'Enable script parser/interpreter debug messages'
+    },
+    mods: {
+      type: yanop.string,
+      short: 'm',
+      description: 'Comma-separated list of mods to load'
     }
   });
 
@@ -166,12 +173,19 @@ var getConfig = exports.getConfig = function getConfig(initConfig) {
   if (opts.scrdbg) {
     logger.logger.levels.scrdbg = 1;
   }
+  if (opts.mods) {
+    cfg.mods = (("string" === typeof cfg.mods) ? cfg.mods+',' : '') +
+      opts.mods;
+  }
 
   return cfg;
 };
 
 var createNode = exports.createNode = function createNode(initConfig) {
   var cfg = getConfig(initConfig);
+
   // Return node object
-  return new Bitcoin.Node(cfg);
+  var node = new Bitcoin.Node(cfg);
+
+  return node;
 };

@@ -51,6 +51,15 @@ bitcoinjs-run(1) -- run daemon in foreground
   * `--port`=<port>:
     Port to listen for incoming peer-to-peer connections.
 
+  * `-m` <mods>, `--mods`=<mods>:
+    Mods to load. You can specify multiple mods separated with commas.
+
+    Available mods are:
+
+    _exit_:
+    Starts a BitcoinJS exit node that lightweight clients can connect
+    to.
+
   * `--rpcuser`=<username>:
     Username for JSON-RPC connections.
 
