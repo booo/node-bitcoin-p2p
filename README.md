@@ -34,11 +34,15 @@ LevelDB is the default database back end in BitcoinJS 0.2+. It is
 bundled with the `node-leveldb` NPM module and is therefore installed
 automatically. No manual steps should be necessary.
 
-### MongoDB (optional)
+### MongoDB (deprecated)
 
-If you wish to use a MongoDB database (most users will want to just
-use the built-in database), you need to setup a MongoDB server. This
-can be done using any method.
+If you wish to use a MongoDB database, you need to setup a MongoDB
+server. This can be done using any method.
+
+Note that we don't recommend using MongoDB. We see BitcoinJS as a
+special purpose database server, so having a general purpose database
+server behind introduces tremendous overhead. For more information on
+how to query BitcoinJS in LevelDB mode, please refer to the wiki.
 
 
 ## Installation
