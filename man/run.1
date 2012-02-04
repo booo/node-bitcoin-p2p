@@ -1,7 +1,7 @@
-.\" Generated with Ronnjs/v0.1
+.\" Generated with Ronnjs 0.3.8
 .\" http://github.com/kapouer/ronnjs/
 .
-.TH "BITCOINJS\-RUN" "1" "August 2011" "" ""
+.TH "BITCOINJS\-RUN" "1" "February 2012" "" ""
 .
 .SH "NAME"
 \fBbitcoinjs-run\fR \-\- run daemon in foreground
@@ -71,6 +71,18 @@ Connect to the test network
 .IP "\(bu" 4
 \fB\-\-port\fR=<port>:
 Port to listen for incoming peer\-to\-peer connections\.
+.
+.IP "\(bu" 4
+\fB\-m\fR <mods>, \fB\-\-mods\fR=<mods>:
+Mods to load\. You can specify multiple mods separated with commas\.
+.
+.IP
+Available mods are:
+.
+.IP
+\fIexit\fR:
+Starts a BitcoinJS exit node that lightweight clients can connect
+to\.
 .
 .IP "\(bu" 4
 \fB\-\-rpcuser\fR=<username>:
