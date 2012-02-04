@@ -45,6 +45,9 @@ node-bitcoin-p2p's daemon.
   Executes the BitcoinJS unit tests, powered by VowsJS. By default the
   --spec format is used. Other available formats are XUnit, JSON and
   dot matrix. See `bitcoinjs help test`.
+* setup:
+  Installs the dependencies for a mod. See the mods/ folder in your
+  bitcoinjs installation for information on what mods are available.
 
 ## BUGS
 

@@ -1,0 +1,43 @@
+.\" Generated with Ronnjs 0.3.8
+.\" http://github.com/kapouer/ronnjs/
+.
+.TH "BITCOINJS\-SETUP" "1" "February 2012" "" ""
+.
+.SH "NAME"
+\fBbitcoinjs-setup\fR \-\- install mod dependencies
+.
+.SH "SYNOPSIS"
+.
+.nf
+bitcoinjs setup <modname>
+.
+.fi
+.
+.SH "OPTIONS"
+.
+.IP "\(bu" 4
+\fB<modname>\fR:
+You must specify a mod whose dependencies are to be installed\.
+.
+.IP
+To get a list of available mods, look in the mods/ folder in your
+bitcoinjs installation\.
+.
+.IP "" 0
+.
+.SH "DESCRIPTION"
+This command takes a module name and installs any Node\.js packages
+this mod needs using NPM\.
+.
+.P
+You need to make sure you have adequate permissions for this
+operation\. At a minimum, you need write permission to the
+mods/<modname>/node_modules folder or \- if it doesn\'t exist \- the
+mods/<modname/ folder so that it can be created\.
+.
+.SH "SEE ALSO"
+.
+.IP "\(bu" 4
+bitcoinjs\-run(1)
+.
+.IP "" 0
