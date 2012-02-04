@@ -17,17 +17,17 @@ if (!command) {
 var usage = "usage: bitcoinjs <command> [<args>] ...\n" +
   "\n" +
   "The most commonly used commands are:\n" +
-  "  run        Run node-bitcoin-p2p daemon in foreground\n" +
-  "  start      Run node-bitcoin-p2p as a managed daemon\n" +
-  "  stop       Stop node-bitcoin-p2p daemon\n" +
-  "  restart    Restart node-bitcoin-p2p daemon\n" +
+  "  run        Run bitcoinjs-server daemon in foreground\n" +
+  "  start      Run bitcoinjs-server as a managed daemon\n" +
+  "  stop       Stop bitcoinjs-server daemon\n" +
+  "  restart    Restart bitcoinjs-server daemon\n" +
   "  list       List currently runnning daemon instances\n" +
   "  db-reset   Reset the database\n" +
   "  db-drop    Drop the database\n" +
   "  bch-import Import block chain from dump\n" +
   "  bch-export Dump block chain into files\n" +
   "  verify     Statically check the block chain data\n" +
-  "  test       Execute node-bitcoin-p2p's unit tests\n" +
+  "  test       Execute bitcoinjs-server's unit tests\n" +
   "  setup      Setup dependencies for a mod\n" +
   "\n" +
   "You can run 'bitcoinjs help <command>' to get help with a command.\n"+

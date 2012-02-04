@@ -2,7 +2,7 @@ var util = require('util');
 var path = require('path');
 var yanop = require('yanop');
 
-// Load node-bitcoin-p2p
+// Load bitcoinjs-server
 var Bitcoin = require('../lib/bitcoin');
 var logger = require('../lib/logger');
 
@@ -103,7 +103,7 @@ var getConfig = exports.getConfig = function getConfig(initConfig) {
           "BitcoinJS was unable to locate your config file under:\n" +
           "" + path.resolve(__dirname, configPath) + ".js\n" +
           "\n" +
-          "If you just installed node-bitcoin-p2p, this is normal.\n" +
+          "If you just installed bitcoinjs-server, this is normal.\n" +
           "You'll find an example config file here:\n" +
           "" + path.resolve(__dirname, './settings.example.js') + "\n");
     } else {

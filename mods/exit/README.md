@@ -6,10 +6,10 @@ network.
 # Installation
 
 First you need to [install
-node-bitcoin-p2p](https://github.com/bitcoinjs/node-bitcoin-p2p).
+bitcoinjs-server](https://github.com/bitcoinjs/bitcoinjs-server).
 
 Make sure you download the block chain after configuring
-`node-bitcoin-p2p`.
+`bitcoinjs-server`.
 
 Then, setup the exit node module using `bitcoinjs setup exit`.
 

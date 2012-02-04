@@ -25,7 +25,7 @@ Here is some example output from `bitcoinjs list`:
  * `node`:
    Interpreter, usually "node".
  * `daemon/start.js`:
-   Here will be displayed the startup script. For node-bitcoin-p2p
+   Here will be displayed the startup script. For bitcoinjs-server
    this is daemon/start.js.
  * `[5261, 5260]`:
    This are the process IDs. 5260 is the manager process and 5261 the

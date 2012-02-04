@@ -1,4 +1,4 @@
-# BitcoinJS Server (node-bitcoin-p2p)
+# BitcoinJS Server
 
 This is an implementation of a Bitcoin node in Node.js. It is intended
 as a powerful alternative to the standard bitcoind that ships with the
@@ -56,11 +56,11 @@ sudo npm install bitcoinjs -g
 ```
 
 Please refer to the wiki for detailed [installation
-instructions](https://github.com/bitcoinjs/node-bitcoin-p2p/wiki/Installation).
+instructions](https://github.com/bitcoinjs/bitcoinjs-server/wiki/Installation).
 
 If you run into problems, please take a look at the "Troubleshooting"
 section below or go to
-[Issues](https://github.com/bitcoinjs/node-bitcoin-p2p/issues) to open
+[Issues](https://github.com/bitcoinjs/bitcoinjs-server/issues) to open
 a new ticket.
 
 # Usage
@@ -119,7 +119,7 @@ to the code.
 
 For details on developing with BitcoinJS as a library, take a
 look at the Developer Guide on the
-[wiki](https://github.com/bitcoinjs/node-bitcoin-p2p/wiki).
+[wiki](https://github.com/bitcoinjs/bitcoinjs-server/wiki).
 
 
 # Upgrading
@@ -178,7 +178,7 @@ node-waf configure build
 
 # Credits
 
-BitcoinJS Server (node-bitcoin-p2p) - Node.js Bitcoin client<br>
+BitcoinJS Server - Node.js Bitcoin client<br>
 Copyright (c) 2011 Stefan Thomas <justmoon@members.fsf.org>.
 
 Some native extensions are<br>
