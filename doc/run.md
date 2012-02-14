@@ -81,6 +81,15 @@ bitcoinjs-run(1) -- run daemon in foreground
   * `--scrdbg`:
     Enable script parser/interpreter debug messages.
 
+  * `--noverify`:
+    Disable all tx/block verification.
+
+    This is intended to be used together with `--connect` to connect
+    to a trusted node or for testing purposes.
+
+    Without verification BitcoinJS will use less resources, but you
+    have to trust any node the daemon connects with.
+
   * `-h`, `--help`:
     Inline command help.
 

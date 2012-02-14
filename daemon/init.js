@@ -81,6 +81,10 @@ var getConfig = exports.getConfig = function getConfig(initConfig) {
       type: yanop.string,
       short: 'm',
       description: 'Comma-separated list of mods to load'
+    },
+    noverify: {
+      type: yanop.flag,
+      description: 'Disable all tx/block verification'
     }
   });
 
@@ -176,6 +180,9 @@ var getConfig = exports.getConfig = function getConfig(initConfig) {
   if (opts.mods) {
     cfg.mods = (("string" === typeof cfg.mods) ? cfg.mods+',' : '') +
       opts.mods;
+  }
+  if (opts.noverify) {
+    cfg.verify = false;
   }
 
   return cfg;

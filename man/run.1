@@ -113,6 +113,18 @@ Enable JSON RPC debug messages\.
 Enable script parser/interpreter debug messages\.
 .
 .IP "\(bu" 4
+\fB\-\-noverify\fR:
+Disable all tx/block verification\.
+.
+.IP
+This is intended to be used together with \fB\-\-connect\fR to connect
+to a trusted node or for testing purposes\.
+.
+.IP
+Without verification BitcoinJS will use less resources, but you
+have to trust any node the daemon connects with\.
+.
+.IP "\(bu" 4
 \fB\-h\fR, \fB\-\-help\fR:
 Inline command help\.
 .
