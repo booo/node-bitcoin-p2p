@@ -10,6 +10,17 @@ bitcoinjs-run(1) -- run daemon in foreground
   * `-c` <file>, `--config`=<file>:
     Path to config file.
 
+  * `--homedir`=<path>:
+    Home directory. Default: ~/.bitcoinjs/
+
+    This is the base path for any user-specific files.
+
+  * `--datadir`=<path>:
+    Data directory. Default: .
+
+    Local database backends will store their data files here. Relative
+    paths are interpreted relative to the `--homedir`.
+
   * `--connect`=<setting>:
     Changes the network connection mode for this node.
 

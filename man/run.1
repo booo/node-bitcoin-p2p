@@ -20,6 +20,21 @@ bitcoinjs run [\-\-testnet | \-\-livenet] [<args>]
 Path to config file\.
 .
 .IP "\(bu" 4
+\fB\-\-homedir\fR=<path>:
+Home directory\. Default: ~/\.bitcoinjs/
+.
+.IP
+This is the base path for any user\-specific files\.
+.
+.IP "\(bu" 4
+\fB\-\-datadir\fR=<path>:
+Data directory\. Default: \.
+.
+.IP
+Local database backends will store their data files here\. Relative
+paths are interpreted relative to the \fB\-\-homedir\fR\|\.
+.
+.IP "\(bu" 4
 \fB\-\-connect\fR=<setting>:
 Changes the network connection mode for this node\.
 .

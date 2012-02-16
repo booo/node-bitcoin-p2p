@@ -21,6 +21,14 @@ var getConfig = exports.getConfig = function getConfig(initConfig) {
       short: 'c',
       description: 'Configuration file'
     },
+    homedir: {
+      type: yanop.string,
+      description: 'Path to BitcoinJS home directory (default: ~/.bitcoinjs/)'
+    },
+    datadir: {
+      type: yanop.string,
+      description: 'Data directory, relative to home dir (default: .)'
+    },
     addnode: {
       type: yanop.list,
       description: 'Add a node to connect to'
@@ -154,6 +162,12 @@ var getConfig = exports.getConfig = function getConfig(initConfig) {
   }
 
   // Apply configuration from the command line
+  if (opts.homedir) {
+    cfg.homedir = opts.homedir;
+  }
+  if (opts.datadir) {
+    cfg.datadir = opts.datadir;
+  }
   if (opts.addnode.length) {
     cfg.network.initialPeers = cfg.network.initialPeers.concat(opts.addnode);
   }
