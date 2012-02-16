@@ -1,5 +1,3 @@
-var cfg = new (require('../lib/settings').Settings)();
-
 // GENERAL SECTION
 // -----------------------------------------------------------------------------
 //
@@ -108,5 +106,3 @@ cfg.network.noListen = false;
 // -----------------------------------------------------------------------------
 // For other (undocumented) settings, please see the lib/settings.js file in the
 // source code.
-
-module.exports = cfg;

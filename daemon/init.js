@@ -5,6 +5,7 @@ var yanop = require('yanop');
 // Load bitcoinjs-server
 var Bitcoin = require('../lib/bitcoin');
 var logger = require('../lib/logger');
+var Settings = require('../lib/settings').Settings;
 
 var mods = [];
 
@@ -93,30 +94,62 @@ var getConfig = exports.getConfig = function getConfig(initConfig) {
     require("./welcome");
   }
 
-  // Load user-defined settings
+  //
+  // Configuration file
+  //
   logger.info('Loading configuration');
+
+  // Calculate config file path
+  var configPath;
+  if (opts.config) {
+    // Explicit config file path provided via flag
+    configPath = path.resolve(opts.config);
+  } else {
+    var homeDir = opts.homedir ? path.resolve(opts.homedir) : Settings.getDefaultHome();
+    configPath = path.resolve(homeDir, './settings');
+
+    // DEPRECATED: Search in source tree for daemon/settings.js
+    try {
+      require.resolve('./settings');
+      configPath = './settings';
+    } catch (e) {}
+  }
+  try {
+    // Check if config file exists (throws an exception otherwise)
+    require.resolve(configPath);
+  } catch (e) {
+    if (configPath.substr(-3) !== '.js') configPath += '.js';
+
+    logger.error('No configuration file found!');
+    util.puts(
+      "\n" +
+        "BitcoinJS was unable to locate your config file at:\n" +
+        "" + path.resolve(__dirname, configPath) + "\n" +
+        "\n" +
+        "Please create a config file in this location or provide the correct path\n" +
+        "to your config using the --config=/path/to/settings.js option.\n" +
+        "\n" +
+        "To get started you can copy the example config file from here:\n" +
+        "" + path.resolve(__dirname, './settings.example.js') + "\n");
+    process.exit(1);
+  }
+
   var cfg;
   try {
-    var configPath = opts.config ? path.resolve(opts.config) : './settings';
-    cfg = require(configPath);
-  } catch (e) {
-    if (/^Cannot find module /.test(e.message)) {
-      logger.warn('No configuration file found!');
-      util.puts(
-        "\n" +
-          "BitcoinJS was unable to locate your config file under:\n" +
-          "" + path.resolve(__dirname, configPath) + ".js\n" +
-          "\n" +
-          "If you just installed bitcoinjs-server, this is normal.\n" +
-          "You'll find an example config file here:\n" +
-          "" + path.resolve(__dirname, './settings.example.js') + "\n");
-    } else {
-      throw e;
+    cfg = global.cfg = new Settings();
+    var returnedCfg = require(configPath);
+
+    if (returnedCfg instanceof Settings) {
+      cfg = returnedCfg;
     }
+  } catch (e) {
+    logger.error('Error while loading configuration file:\n\n'+
+                 (e.stack ? e.stack : e.toString()));
+    process.exit(1);
   }
 
   if (!(cfg instanceof Bitcoin.Settings)) {
-    logger.error('Invalid configuration or none available!\n');
+    logger.error('Configuration file did not provide a valid Settings object.\n');
     process.exit(1);
   }
 
