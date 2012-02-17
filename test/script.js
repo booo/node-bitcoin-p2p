@@ -2,10 +2,11 @@ var vows = require('vows'),
     assert = require('assert');
 
 var logger = require("../lib/logger");
+var bitcoin = require("../lib/bitcoin");
 
-var Script = require("../lib/script").Script;
+var Script = bitcoin.Script;
+var Connection = bitcoin.Connection;
 var ScriptInterpreter = require("../lib/scriptinterpreter").ScriptInterpreter;
-var Connection = require('../lib/connection').Connection;
 var Util = require("../lib/util");
 var Transaction = require('../lib/schema/transaction').Transaction;
 var BitcoinKey = Util.BitcoinKey;
