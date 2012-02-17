@@ -179,10 +179,10 @@ node-waf configure build
 # Credits
 
 BitcoinJS Server - Node.js Bitcoin client<br>
-Copyright (c) 2011 Stefan Thomas <justmoon@members.fsf.org>.
+Copyright (c) 2011-2012 Stefan Thomas <justmoon@members.fsf.org>.
 
 Some native extensions are<br>
-Copyright (c) 2011 Andrew Schaaf <andrew@andrewschaaf.com>
+Copyright (c) 2011-2012 Andrew Schaaf <andrew@andrewschaaf.com>
 
 Parts of this software are based on [BitcoinJ](http://code.google.com/p/bitcoinj/)<br>
-Copyright (c) 2011 Google Inc.
+Copyright (c) 2011-2012 Google Inc.
