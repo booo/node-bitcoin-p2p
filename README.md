@@ -17,6 +17,16 @@ requires real-time data from the block chain or wants to run queries
 against it.
 
 
+# Documentation
+
+Please visit the [BitcoinJS Server
+Wiki](https://github.com/bitcoinjs/bitcoinjs-server/wiki) on Github
+for documentation.
+
+There is also a built-in documentation system which you can access by
+running `bitcoinjs help`.
+
+
 # Installation
 
 ## Prerequisites
@@ -175,6 +185,11 @@ Go to the `bitcoinjs` folder and run:
 ``` sh
 node-waf configure build
 ```
+
+# License
+
+This product is free and open-source software released under the MIT
+license.
 
 # Credits
 
