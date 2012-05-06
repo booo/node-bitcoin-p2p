@@ -25,8 +25,7 @@ Tx.method('send', {
     var txBuf = new Buffer(params.tx.toString(), 'base64');
     var message = bitcoin.Connection.parseMessage("tx", txBuf);
     delete message.command;
-    var Transaction = new bitcoin.schema.Transaction;
-    var tx = new Transaction(message);
+    var tx = new bitcoin.schema.Transaction(message);
     this.node.sendTx(tx, function (err) {
       if (err) {
         callback(err);
