@@ -108,13 +108,13 @@ var getConfig = exports.getConfig = function getConfig(initConfig) {
   logger.info('Loading configuration');
 
   // Calculate config file path
-  var configPath;
+  var configPath, homeDir;
   if (opts.config) {
     // Explicit config file path provided via flag
     configPath = path.resolve(opts.config);
   } else {
     var defHome = Settings.getDefaultHome() + (opts.testnet ? '/testnet' : '');
-    var homeDir = opts.homedir ? path.resolve(opts.homedir) : defHome;
+    homeDir = opts.homedir ? path.resolve(opts.homedir) : defHome;
     configPath = path.resolve(homeDir, './settings');
 
     // DEPRECATED: Search in source tree for daemon/settings.js
@@ -146,6 +146,7 @@ var getConfig = exports.getConfig = function getConfig(initConfig) {
   var cfg;
   try {
     cfg = global.cfg = new Settings();
+    cfg.homedir = homeDir;
     var returnedCfg = require(configPath);
 
     if (returnedCfg instanceof Settings) {
