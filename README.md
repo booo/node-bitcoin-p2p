@@ -152,7 +152,7 @@ To run the test suite, please install [Vows](http://vowsjs.org) and
 run the following command:
 
 ``` sh
-vows test/* --spec
+vows test/*.js --spec
 ```
 
 # Status

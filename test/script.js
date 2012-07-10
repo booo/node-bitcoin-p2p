@@ -1,19 +1,26 @@
 var vows = require('vows'),
     assert = require('assert');
 
+var fs = require('fs');
+
+var buffertools = require('buffertools');
+
 var logger = require("../lib/logger");
 var bitcoin = require("../lib/bitcoin");
 
 var Script = bitcoin.Script;
 var Connection = bitcoin.Connection;
 var ScriptInterpreter = require("../lib/scriptinterpreter").ScriptInterpreter;
+var Opcode = require("../lib/opcode").Opcode;
 var Util = require("../lib/util");
 var Transaction = require('../lib/schema/transaction').Transaction;
 var BitcoinKey = Util.BitcoinKey;
 
 logger.logger.levels.scrdbg = 1;
 
-vows.describe('Script').addBatch({ "Script with": {
+var suite = vows.describe('Script');
+
+suite.addBatch({ "Script with": {
   'OP_1NEGATE & OP_16':
   stackTest([OP_1NEGATE, OP_16], [-1, 16]),
 
@@ -213,7 +220,7 @@ vows.describe('Script').addBatch({ "Script with": {
 
   'OP_SHA1':
   stackTest(['426974636f696e4a5321', OP_SHA1],
-            ['bc1d0c5c6957cfd38a8ba6dfb1f65c0801ffd889']),
+            ['ff339e8b4a9b0a07d4686197de3d4e065d8cdcba']),
 
   'OP_SHA256':
   stackTest(['426974636f696e4a5321', OP_SHA256],
@@ -272,12 +279,80 @@ vows.describe('Script').addBatch({ "Script with": {
   // Tx f5eb769eff73a4781b600064ac16dff54e039994e7dedb77903a19b5edec1fc7
   // from testnet, block 39399
   txTest("0100000002ab9f97d24b612e7fbf27ba5d29f0c7201ddca2db0dde304965a4c7691d77a3bb000000008c493046022100866e834a7d2609a3a22a9c5ff13e301b4ad9f7fcb65dc3e8b27d07f3fc02084b022100eec81365b922db5707058379a1038dc0c8c6d547a31b494b2f05e607a62b9505014104c56c2ccd35260cef7b79c742b0cfc076f2e709f10191b9058a9116f18801834c5b14ace9aa99bc480092da29fc3f4dd8eccae151304cadfbcf07d4047d2e32d5ffffffffbe521dc4280bff0dfee92c3606d2e1c748ec9ed8692cfc35a8f5c631a2d63cc901000000d300483045022100c044d2877e14ffd0d1a832fd65f8670937d26c15e9049d384febdfe53616a29d022073983873504caf70c9468147497dddc027cb895ab2548095069daeca5dc0c083014c87514104cbcdfa318634d9a31a0d43e0e266914cde11ae9eb15d39ebcb9d5169483826dd74a0af31b36fea6648e1d55862a7d7799f5b3f44bb4901b0ab555c648cb509044104338517576bf89b220338e01e171b366ad261bd07e9480b4e179a0c9580b91c9debecabd840141d4bb4a8da498c1a30c59fbce0a798bde6a3cda397aa93de600752aeffffffff0270d75d00000000001976a9142869126e5a899e9d5e68acab40a91f7366bbe36088ac80f0fa02000000001976a9145ce6be8588bcdd09376e20eb7c0994ac0b6b142188b000000000", [OP_DUP, OP_HASH160, "c0c8d884f47c6e206c0bea693764b5e495c65d11", OP_EQUALVERIFY, OP_NOP1], 1, [0, '3045022100c044d2877e14ffd0d1a832fd65f8670937d26c15e9049d384febdfe53616a29d022073983873504caf70c9468147497dddc027cb895ab2548095069daeca5dc0c08301', '514104cbcdfa318634d9a31a0d43e0e266914cde11ae9eb15d39ebcb9d5169483826dd74a0af31b36fea6648e1d55862a7d7799f5b3f44bb4901b0ab555c648cb509044104338517576bf89b220338e01e171b366ad261bd07e9480b4e179a0c9580b91c9debecabd840141d4bb4a8da498c1a30c59fbce0a798bde6a3cda397aa93de600752ae'])
-}}).export(module);
+}});
+
+suite.addBatch(generateSuite('script_valid.json'));
+suite.addBatch(generateSuite('script_invalid.json', true));
+
+suite.export(module);
+
+function generateSuite(filename, shouldFail)
+{
+  var file = fs.readFileSync(__dirname + '/data/' + filename, 'utf8');
+  var tests = JSON.parse(file);
+  var suite = {};
+
+  var n = 0;
+  tests.forEach(function (test) {
+    var scriptSig = parseTestData(test[0]);
+    var scriptPubKey = parseTestData(test[1]);
+    var title = scriptSig.getStringContent(true) + ' ' +
+      scriptPubKey.getStringContent(true);
+    if (test.length >= 3) {
+      title += ' '+test[2];
+    }
+    suite[title] = scriptTest(scriptSig, scriptPubKey, shouldFail);
+  });
+  return { 'Static script': suite };
+};
+
+function parseTestData(str)
+{
+  var literals = [];
+  str = str.replace(/\'(.*?)(?!\\)\'/g, function ($0, $1) {
+    literals.push($1);
+    return 'STR'+(literals.length - 1);
+  });
+  str = str.split(' ');
+  str = str.map(function (token) {
+    if (token.substr(0, 3) == 'STR') {
+      return addDataPrefix(new Buffer(literals[+token.substr(3)], 'utf-8'));
+    } else if (token.substr(0, 2) == '0x') {
+      return new Buffer(token.substr(2), 'hex');
+    } else if (token.match(/^-?[0-9]+$/)) {
+      var number = +token;
+      if (number == 0) {
+        return new Buffer([0]);
+      } else if (number >= -1 && number <= 16) {
+        return new Buffer([number + 80]);
+      } else {
+        return addDataPrefix(ScriptInterpreter.bigintToBuffer(number));
+      }
+    } else {
+      return new Buffer([Opcode.map['OP_'+token]]);
+    }
+  });
+  var scriptBuffer = buffertools.concat.apply(buffertools, str);
+  try {
+    return new Script(scriptBuffer);
+  } catch (e) {
+    return new Script();
+    console.log(scriptBuffer, e.stack);
+  }
+};
+
+function addDataPrefix(data)
+{
+  var script = new Script();
+  script.writeBytes(data);
+  return script.buffer;
+};
 
 /**
  * Test whether a script results in the correct stack.
  */
-function stackTest(scriptChunks, stack, expectedError) {
+function stackTest(scriptChunks, stack, expectedError)
+{
   var context = {
     topic: function () {
       var cb = this.callback;
@@ -313,7 +388,33 @@ function stackTest(scriptChunks, stack, expectedError) {
   return context;
 };
 
-function txTest(txData, scriptPubKeyData, inIndex, expectedResult) {
+var defaultTx = Connection.parseTx(Util.decodeHex("766f790b01ef11dd97c3d6c812cf598ef5f5a88731e5e7cd1ef325be0a2f906179fbd4afb2010000006c493046022100b5775bd2ef0a5d45369f286dfa24fa990af7ae887b2a3e2c24d8eacb18430e36022100d9b6760e59f2a52cecd81ef7422c9ad41589f879a24358145307169858b8dc13082102a32efde012298e69e3601eb94fceb84c900efecdca8abc6a46f20a810acf18b7ffffffff014000a812000000001976a9145682781e9afa6c0b039e32d469d5212a61d8a8fa88ac00000000"));
+function scriptTest(scriptSig, scriptPubKey, shouldFail)
+{
+  var testCase = {
+    topic: function () {
+      var cb = this.callback;
+      var si = ScriptInterpreter.verify(scriptSig, scriptPubKey,
+                                        defaultTx, 0, 1, function (e, result) {
+        if (e && !shouldFail) {
+          cb(e);
+          return;
+        } else if (e) {
+          cb(null, false);
+          return;
+        }
+        cb(null, result);
+      });
+    }
+  };
+  testCase[shouldFail ? 'is false' : 'is true'] = function (topic) {
+    assert[shouldFail ? 'isFalse' : 'isTrue'](topic);
+  };
+  return testCase;
+};
+
+function txTest(txData, scriptPubKeyData, inIndex, expectedResult)
+{
   inIndex = "number" === typeof inIndex ? inIndex : 0;
   expectedResult = expectedResult ? expectedResult : [1];
   return {
