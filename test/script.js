@@ -296,8 +296,7 @@ function generateSuite(filename, shouldFail)
   tests.forEach(function (test) {
     var scriptSig = parseTestData(test[0]);
     var scriptPubKey = parseTestData(test[1]);
-    var title = scriptSig.getStringContent(true) + ' ' +
-      scriptPubKey.getStringContent(true);
+    var title = test[0] + ' ' + test[1];
     if (test.length >= 3) {
       title += ' '+test[2];
     }
@@ -332,13 +331,7 @@ function parseTestData(str)
       return new Buffer([Opcode.map['OP_'+token]]);
     }
   });
-  var scriptBuffer = buffertools.concat.apply(buffertools, str);
-  try {
-    return new Script(scriptBuffer);
-  } catch (e) {
-    return new Script();
-    console.log(scriptBuffer, e.stack);
-  }
+  return buffertools.concat.apply(buffertools, str);
 };
 
 function addDataPrefix(data)
@@ -389,11 +382,27 @@ function stackTest(scriptChunks, stack, expectedError)
 };
 
 var defaultTx = Connection.parseTx(Util.decodeHex("766f790b01ef11dd97c3d6c812cf598ef5f5a88731e5e7cd1ef325be0a2f906179fbd4afb2010000006c493046022100b5775bd2ef0a5d45369f286dfa24fa990af7ae887b2a3e2c24d8eacb18430e36022100d9b6760e59f2a52cecd81ef7422c9ad41589f879a24358145307169858b8dc13082102a32efde012298e69e3601eb94fceb84c900efecdca8abc6a46f20a810acf18b7ffffffff014000a812000000001976a9145682781e9afa6c0b039e32d469d5212a61d8a8fa88ac00000000"));
-function scriptTest(scriptSig, scriptPubKey, shouldFail)
+function scriptTest(scriptSigBuffer, scriptPubKeyBuffer, shouldFail)
 {
   var testCase = {
     topic: function () {
       var cb = this.callback;
+      var scriptSig, scriptPubKey;
+
+      // Parse scripts
+      try {
+        scriptSig = new Script(scriptSigBuffer);
+        scriptPubKey = new Script(scriptPubKeyBuffer);
+      } catch (e) {
+        if (shouldFail) {
+          cb(null, false);
+        } else {
+          cb(e);
+        }
+        return;
+      }
+
+      // Execute scripts
       var si = ScriptInterpreter.verify(scriptSig, scriptPubKey,
                                         defaultTx, 0, 1, function (e, result) {
         if (e && !shouldFail) {
